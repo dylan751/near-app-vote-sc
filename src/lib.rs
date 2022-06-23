@@ -1,7 +1,7 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, serde_json, AccountId, PanicOnDefault};
+use near_sdk::{near_bindgen, AccountId, PanicOnDefault, Timestamp};
 
 pub type UserId = u32;
 pub type VoteId = u32;
