@@ -2,10 +2,11 @@ use crate::*;
 
 #[near_bindgen]
 impl AppVoteContract {
+    // ----------------------------------------- CREATE -----------------------------------------
     /**
-     * - Create a new Criteria
+     * - Create a new Result
      * - Ask user to deposit an amount of NEAR to cover storage data fee
-     * - Add Criteria into criterias_by_id
+     * - Add Result into results_by_id
      * - Refund redundant deposited NEAR back to user
      */
     #[payable]
@@ -14,7 +15,7 @@ impl AppVoteContract {
 
         let result_id = self.results_by_id_counter;
 
-        // Create new User
+        // Create new Result
         let new_result = Result {
             month,
             user_id,
@@ -23,8 +24,11 @@ impl AppVoteContract {
             updated_at: None,
         };
 
-        // Insert new User into users_by_id (list of Users of this Smart Contract)
+        // Insert new Result into results_by_id (list of Results of this Smart Contract)
         self.results_by_id.insert(&result_id, &new_result);
+
+        // Update Result Id Counter
+        self.results_by_id_counter += 1;
 
         // Used data storage = after_storage_usage - before_storage_usage
         let after_storage_usage = env::storage_usage();
@@ -32,5 +36,21 @@ impl AppVoteContract {
         refund_deposit(after_storage_usage - before_storage_usage);
 
         new_result
+    }
+
+    // ----------------------------------------- READ -----------------------------------------
+    // Get list of all Results in this Smart Contract (with pagination)
+    pub fn get_all_results(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<Result> {
+        self.results_by_id
+            .iter()
+            .skip(from_index.unwrap_or(0) as usize)
+            .take(limit.unwrap_or(PAGINATION_SIZE) as usize)
+            .map(|(result_id, _result)| self.results_by_id.get(&result_id).unwrap())
+            .collect()
+    }
+
+    // Get 1 Result by id
+    pub fn get_result_by_id(&self, result_id: ResultId) -> Result {
+        self.results_by_id.get(&result_id).expect("Result does not exist")
     }
 }

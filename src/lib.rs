@@ -22,13 +22,15 @@ mod users;
 mod utils;
 mod votes;
 
+const PAGINATION_SIZE: u64 = 10;
+
 #[near_bindgen]
 #[derive(BorshSerialize, BorshDeserialize, PanicOnDefault)]
 pub struct AppVoteContract {
     pub owner_id: AccountId, // Account id of the Smart Contract
     pub users_by_id: UnorderedMap<UserId, User>, // List of Users in this Smart Contract
-    pub votes_by_id: UnorderedMap<VoteId, Vote>, // List of Votes in this Smart Contract
     pub criterias_by_id: UnorderedMap<CriteriaId, Criteria>, // List of Criterias in this Smart Contract
+    pub votes_by_id: UnorderedMap<VoteId, Vote>, // List of Votes in this Smart Contract
     pub results_by_id: UnorderedMap<ResultId, Result>, // List of Results in this Smart Contract
 
     pub users_by_id_counter: u32,     // Counter of the list of User Id
@@ -40,8 +42,8 @@ pub struct AppVoteContract {
 #[derive(BorshSerialize, BorshDeserialize)]
 pub enum StorageKey {
     UsersByIdKey,
-    VotesByIdKey,
     CriteriasByIdKey,
+    VotesByIdKey,
     ResultsByIdKey,
 }
 
@@ -52,8 +54,8 @@ impl AppVoteContract {
         Self {
             owner_id,
             users_by_id: UnorderedMap::new(StorageKey::UsersByIdKey.try_to_vec().unwrap()),
-            votes_by_id: UnorderedMap::new(StorageKey::VotesByIdKey.try_to_vec().unwrap()),
             criterias_by_id: UnorderedMap::new(StorageKey::CriteriasByIdKey.try_to_vec().unwrap()),
+            votes_by_id: UnorderedMap::new(StorageKey::VotesByIdKey.try_to_vec().unwrap()),
             results_by_id: UnorderedMap::new(StorageKey::ResultsByIdKey.try_to_vec().unwrap()),
             users_by_id_counter: 0,
             votes_by_id_counter: 0,

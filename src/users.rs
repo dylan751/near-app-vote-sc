@@ -2,6 +2,7 @@ use crate::*;
 
 #[near_bindgen]
 impl AppVoteContract {
+    // ----------------------------------------- CREATE -----------------------------------------
     /**
      * - Create a new User
      * - Ask user to deposit an amount of NEAR to cover storage data fee
@@ -30,7 +31,7 @@ impl AppVoteContract {
             updated_at: None,
         };
 
-        // Insert new User into users_by_id (list of Users of this Smart Contract) 
+        // Insert new User into users_by_id (list of Users of this Smart Contract)
         self.users_by_id.insert(&user_id, &new_user);
 
         // Update User Id Counter
@@ -42,5 +43,21 @@ impl AppVoteContract {
         refund_deposit(after_storage_usage - before_storage_usage);
 
         new_user
+    }
+
+    // ----------------------------------------- READ -----------------------------------------
+    // Get list of all Users in this Smart Contract (with pagination)
+    pub fn get_all_users(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<User> {
+        self.users_by_id
+            .iter()
+            .skip(from_index.unwrap_or(0) as usize)
+            .take(limit.unwrap_or(PAGINATION_SIZE) as usize)
+            .map(|(user_id, _user)| self.users_by_id.get(&user_id).unwrap())
+            .collect()
+    }
+
+    // Get 1 User by id
+    pub fn get_user_by_id(&self, user_id: UserId) -> User {
+        self.users_by_id.get(&user_id).expect("User does not exist")
     }
 }
