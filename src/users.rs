@@ -1,0 +1,46 @@
+use crate::*;
+
+#[near_bindgen]
+impl AppVoteContract {
+    /**
+     * - Create a new User
+     * - Ask user to deposit an amount of NEAR to cover storage data fee
+     * - Add User into users_by_id
+     * - Refund redundant deposited NEAR back to user
+     */
+    #[payable]
+    pub fn create_user(
+        &mut self,
+        name: AccountId,
+        role: Role,
+        email: String,
+        near_account_id: AccountId,
+    ) -> User {
+        let before_storage_usage = env::storage_usage(); // Dùng để tính toán lượng near thừa khi deposit
+
+        let user_id = self.users_by_id_counter;
+
+        // Create new User
+        let new_user = User {
+            name,
+            role,
+            email,
+            near_account_id,
+            created_at: Some(env::block_timestamp()),
+            updated_at: None,
+        };
+
+        // Insert new User into users_by_id (list of Users of this Smart Contract) 
+        self.users_by_id.insert(&user_id, &new_user);
+
+        // Update User Id Counter
+        self.users_by_id_counter += 1;
+
+        // Used data storage = after_storage_usage - before_storage_usage
+        let after_storage_usage = env::storage_usage();
+        // Refund NEAR
+        refund_deposit(after_storage_usage - before_storage_usage);
+
+        new_user
+    }
+}
