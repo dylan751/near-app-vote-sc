@@ -35,6 +35,11 @@ near view btc-app-vote.duongnh.testnet get_all_users '{"from_index": 0, "limit":
 near view btc-app-vote.duongnh.testnet get_user_by_id '{"user_id": 0}'
 ```
 
+4. Update User information
+```
+near call btc-app-vote.duongnh.testnet update_user '{"user_id": 0, "name": "Hai", "role": "Admin", "email": "duong07052001@gmail.com", "near_account_id": "duongnh.testnet"}' --accountId duongnh.testnet
+```
+
 ---
 ### Criterias
 1. Create a Criteria:
@@ -52,6 +57,11 @@ near view btc-app-vote.duongnh.testnet get_all_criterias '{"from_index": 0, "lim
 3. View 1 Criteria by criteria_id
 ```
 near view btc-app-vote.duongnh.testnet get_criteria_by_id '{"criteria_id": 0}'
+```
+
+4. Update Criteria information
+```
+near call btc-app-vote.duongnh.testnet update_criteria '{"criteria_id": 0, "description": "Updated description"}' --accountId duongnh.testnet
 ```
 
 ---
@@ -73,6 +83,10 @@ near view btc-app-vote.duongnh.testnet get_all_votes '{"from_index": 0, "limit":
 near view btc-app-vote.duongnh.testnet get_vote_by_id '{"vote_id": 0}'
 ```
 
+4. Update Vote information
+```
+near call btc-app-vote.duongnh.testnet update_vote '{"vote_id": 0, "month": 6, "start_at": 0, "end_at": 0}' --accountId duongnh.testnet
+```
 
 ---
 ### Results
@@ -91,4 +105,9 @@ near view btc-app-vote.duongnh.testnet get_all_results '{"from_index": 0, "limit
 3. View 1 Result by result_id
 ```
 near view btc-app-vote.duongnh.testnet get_result_by_id '{"result_id": 0}'
+```
+
+4. Update Result information
+```
+near call btc-app-vote.duongnh.testnet update_result '{"result_id": 0, "month": 7}' --accountId duongnh.testnet
 ```

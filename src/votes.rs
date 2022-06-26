@@ -23,9 +23,15 @@ impl AppVoteContract {
         let vote_id = self.votes_by_id_counter;
 
         // Check if the criteria_id exists or not
-        assert!(self.criterias_by_id.get(&criteria_id).is_some(), "Criteria does not exist");
+        assert!(
+            self.criterias_by_id.get(&criteria_id).is_some(),
+            "Criteria does not exist"
+        );
         // Check if the user_id exists or not
-        assert!(self.users_by_id.get(&user_id).is_some(), "User does not exist");
+        assert!(
+            self.users_by_id.get(&user_id).is_some(),
+            "User does not exist"
+        );
         // Check if month is valid or not
 
         // Create new Vote
@@ -68,5 +74,35 @@ impl AppVoteContract {
     // Get 1 Vote by id
     pub fn get_vote_by_id(&self, vote_id: VoteId) -> Vote {
         self.votes_by_id.get(&vote_id).expect("Vote does not exist")
+    }
+
+    // Update Vote information
+    pub fn update_vote(
+        &mut self,
+        vote_id: VoteId,
+        month: u32,
+        start_at: Option<Timestamp>,
+        end_at: Option<Timestamp>,
+    ) -> Vote {
+        let vote = self
+            .votes_by_id
+            .get(&vote_id)
+            .expect("This vote does not exist");
+
+        let updated_vote = Vote {
+            criteria_id: vote.criteria_id,
+            user_id: vote.user_id,
+            status: vote.status,
+            month,
+            start_at,
+            end_at,
+            created_at: vote.created_at,
+            updated_at: Some(env::block_timestamp()),
+        };
+
+        // Update votes_by_id
+        self.votes_by_id.insert(&vote_id, &updated_vote);
+
+        updated_vote
     }
 }

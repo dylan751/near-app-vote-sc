@@ -16,7 +16,10 @@ impl AppVoteContract {
         let criteria_id = self.criterias_by_id_counter;
 
         // Check if the user_id exists or not
-        assert!(self.users_by_id.get(&user_id).is_some(), "User does not exist");
+        assert!(
+            self.users_by_id.get(&user_id).is_some(),
+            "User does not exist"
+        );
 
         // Create new Criteria
         let new_criteria = Criteria {
@@ -53,6 +56,32 @@ impl AppVoteContract {
 
     // Get 1 Criteria by id
     pub fn get_criteria_by_id(&self, criteria_id: CriteriaId) -> Criteria {
-        self.criterias_by_id.get(&criteria_id).expect("Criteria does not exist")
+        self.criterias_by_id
+            .get(&criteria_id)
+            .expect("Criteria does not exist")
+    }
+
+    // Update Criteria information
+    pub fn update_criteria(
+        &mut self,
+        criteria_id: CriteriaId,
+        description: String, // Description of the Criteria
+    ) -> Criteria {
+        let criteria = self
+            .criterias_by_id
+            .get(&criteria_id)
+            .expect("This criteria does not exist");
+
+        let updated_criteria = Criteria {
+            user_id: criteria.user_id, // The user who created this criteria (Can't be change)
+            description,
+            created_at: criteria.created_at,
+            updated_at: Some(env::block_timestamp()),
+        };
+
+        // Update criterias_by_id
+        self.criterias_by_id.insert(&criteria_id, &updated_criteria);
+
+        updated_criteria
     }
 }

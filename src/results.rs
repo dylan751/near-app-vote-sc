@@ -51,6 +51,29 @@ impl AppVoteContract {
 
     // Get 1 Result by id
     pub fn get_result_by_id(&self, result_id: ResultId) -> Result {
-        self.results_by_id.get(&result_id).expect("Result does not exist")
+        self.results_by_id
+            .get(&result_id)
+            .expect("Result does not exist")
+    }
+
+    // Update Criteria information (When a user vote)
+    pub fn update_result(&mut self, result_id: ResultId, month: u32) -> Result {
+        let result = self
+            .results_by_id
+            .get(&result_id)
+            .expect("This result does not exist");
+
+        let updated_result = Result {
+            month, // Update Vote's month if needed
+            user_id: result.user_id,
+            total_vote: result.total_vote + 1, // Increase the number of votes by one
+            created_at: result.created_at,
+            updated_at: Some(env::block_timestamp()),
+        };
+
+        // Update results_by_id
+        self.results_by_id.insert(&result_id, &updated_result);
+
+        updated_result
     }
 }

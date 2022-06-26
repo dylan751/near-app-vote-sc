@@ -60,4 +60,33 @@ impl AppVoteContract {
     pub fn get_user_by_id(&self, user_id: UserId) -> User {
         self.users_by_id.get(&user_id).expect("User does not exist")
     }
+
+    // Update User information
+    pub fn update_user(
+        &mut self,
+        user_id: UserId,
+        name: AccountId,
+        role: Role,
+        email: String,
+        near_account_id: AccountId,
+    ) -> User {
+        let user = self
+            .users_by_id
+            .get(&user_id)
+            .expect("This user does not exist");
+
+        let updated_user = User {
+            name,
+            role,
+            email,
+            near_account_id,
+            created_at: user.created_at,
+            updated_at: Some(env::block_timestamp()),
+        };
+
+        // Update users_by_id
+        self.users_by_id.insert(&user_id, &updated_user);
+
+        updated_user
+    }
 }
