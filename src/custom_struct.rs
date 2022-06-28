@@ -27,20 +27,6 @@ pub struct User {
     pub updated_at: Option<Timestamp>,
 }
 
-// ----------------------------------- Vote Struct -----------------------------------
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct Vote {
-    pub criteria_id: CriteriaId, // Id of the Criteria to vote for
-    pub user_id: UserId,         // Id of the User who vote
-    pub status: Status,          // Status of the Vote
-    pub month: u32,              // Voted month
-    pub start_at: Option<Timestamp>,     // Start time of the Vote (In epoch -> nanoseconds)
-    pub end_at: Option<Timestamp>,       // End time of the Vote (In epoch -> nanoseconds)
-    pub created_at: Option<Timestamp>,
-    pub updated_at: Option<Timestamp>,
-}
-
 // ----------------------------------- Criteria Struct -----------------------------------
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
@@ -51,12 +37,33 @@ pub struct Criteria {
     pub updated_at: Option<Timestamp>,
 }
 
+// ----------------------------------- Poll Struct -----------------------------------
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct Poll {
+    pub criteria_id: CriteriaId,     // Id of the Criteria to vote for
+    pub user_id: UserId,             // Id of the User who vote
+    pub title: String,               // Title of the Poll
+    pub description: String,         // Description of the Poll
+    pub start_at: Option<Timestamp>, // Start time of the Vote (In epoch -> nanoseconds)
+    pub end_at: Option<Timestamp>,   // End time of the Vote (In epoch -> nanoseconds)
+    pub created_at: Option<Timestamp>,
+    pub updated_at: Option<Timestamp>,
+}
+
+// ----------------------------------- Option Struct -----------------------------------
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct PollOption {
+    pub created_at: Option<Timestamp>,
+    pub updated_at: Option<Timestamp>,
+}
+
 // ----------------------------------- Result Struct -----------------------------------
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Result {
-    pub month: u32,      // Voted month
-    pub user_id: UserId, // Id of the User of this Result
+    pub poll_option_id: PollOptionId, // Id of the Poll Option
     pub total_vote: u32, // Total Vote for this User
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
