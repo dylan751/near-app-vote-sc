@@ -40,6 +40,11 @@ near view btc-app-vote.duongnh.testnet get_user_by_id '{"user_id": 0}'
 near call btc-app-vote.duongnh.testnet update_user '{"user_id": 0, "name": "Hai", "role": "Admin", "email": "duong07052001@gmail.com", "near_account_id": "duongnh.testnet"}' --accountId duongnh.testnet
 ```
 
+5. Delete a User
+```
+near call btc-app-vote.duongnh.testnet delete_user '{"user_id": 0}' --accountId duongnh.testnet
+```
+
 ---
 ### Criterias
 1. Create a Criteria:
@@ -62,6 +67,11 @@ near view btc-app-vote.duongnh.testnet get_criteria_by_id '{"criteria_id": 0}'
 4. Update Criteria information
 ```
 near call btc-app-vote.duongnh.testnet update_criteria '{"criteria_id": 0, "description": "Updated description"}' --accountId duongnh.testnet
+```
+
+5. Delete a Criteria
+```
+near call btc-app-vote.duongnh.testnet delete_criteria '{"criteria_id": 0}' --accountId duongnh.testnet
 ```
 
 ---
@@ -88,6 +98,11 @@ near view btc-app-vote.duongnh.testnet get_poll_by_id '{"poll_id": 0}'
 near call btc-app-vote.duongnh.testnet update_poll '{"poll_id": 0, "title": "Updated title", "description": "Updated description", "start_at": 0, "end_at": 0}' --accountId duongnh.testnet
 ```
 
+5. Delete a Poll
+```
+near call btc-app-vote.duongnh.testnet delete_poll '{"poll_id": 0}' --accountId duongnh.testnet
+```
+
 ---
 ### Poll Options
 1. Create a Poll Option:
@@ -105,6 +120,11 @@ near view btc-app-vote.duongnh.testnet get_all_poll_options '{"from_index": 0, "
 3. View 1 Poll Option by poll_option_id
 ```
 near view btc-app-vote.duongnh.testnet get_poll_option_by_id '{"poll_option_id": 0}'
+```
+
+5. Delete a Poll Option
+```
+near call btc-app-vote.duongnh.testnet delete_poll_option '{"poll_option_id": 0}' --accountId duongnh.testnet
 ```
 
 ---
@@ -129,4 +149,9 @@ near view btc-app-vote.duongnh.testnet get_result_by_id '{"result_id": 0}'
 4. Update Result information
 ```
 near call btc-app-vote.duongnh.testnet update_result '{"result_id": 0, "poll_option_id": 0}' --accountId duongnh.testnet
+```
+
+5. Delete a Result
+```
+near call btc-app-vote.duongnh.testnet delete_result '{"result_id": 0}' --accountId duongnh.testnet
 ```

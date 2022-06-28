@@ -14,6 +14,7 @@ pub use crate::custom_struct::*;
 pub use crate::poll_options::*;
 pub use crate::polls::*;
 pub use crate::results::*;
+pub use crate::tests::*;
 pub use crate::users::*;
 use crate::utils::*;
 
@@ -22,6 +23,7 @@ mod custom_struct;
 mod poll_options;
 mod polls;
 mod results;
+mod tests;
 mod users;
 mod utils;
 
