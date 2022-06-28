@@ -107,4 +107,11 @@ impl AppVoteContract {
 
         updated_poll
     }
+
+    // Delete Poll from the Smart Contract
+    pub fn delete_poll(&mut self, poll_id: PollId) {
+        self.polls_by_id
+            .remove(&poll_id)
+            .expect("This poll does not exists");
+    }
 }

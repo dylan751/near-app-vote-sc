@@ -21,6 +21,8 @@ impl AppVoteContract {
 
         let user_id = self.users_by_id_counter;
 
+        // TODO: Check duplicate email
+
         // Create new User
         let new_user = User {
             name,
@@ -88,5 +90,12 @@ impl AppVoteContract {
         self.users_by_id.insert(&user_id, &updated_user);
 
         updated_user
+    }
+
+    // Delete User from the Smart Contract
+    pub fn delete_user(&mut self, user_id: UserId) {
+        self.users_by_id
+            .remove(&user_id)
+            .expect("This user does not exists");
     }
 }

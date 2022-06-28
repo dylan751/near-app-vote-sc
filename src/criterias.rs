@@ -84,4 +84,11 @@ impl AppVoteContract {
 
         updated_criteria
     }
+
+    // Delete Criteria from the Smart Contract
+    pub fn delete_criteria(&mut self, criteria_id: CriteriaId) {
+        self.criterias_by_id
+            .remove(&criteria_id)
+            .expect("This criteria does not exists");
+    }
 }

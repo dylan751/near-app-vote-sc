@@ -62,4 +62,11 @@ impl AppVoteContract {
 
     // // Update Poll Option information
     // pub fn update_poll_option(&mut self, poll_option_id: PollOptionId) -> PollOption {}
+
+    // Delete Poll Option from the Smart Contract
+    pub fn delete_poll_option(&mut self, poll_option_id: PollOptionId) {
+        self.poll_options_by_id
+            .remove(&poll_option_id)
+            .expect("This poll_option does not exists");
+    }
 }

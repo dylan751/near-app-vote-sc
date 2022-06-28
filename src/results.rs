@@ -80,4 +80,11 @@ impl AppVoteContract {
 
         updated_result
     }
+
+    // Delete Result from the Smart Contract
+    pub fn delete_result(&mut self, result_id: PollOptionId) {
+        self.results_by_id
+            .remove(&result_id)
+            .expect("This result does not exists");
+    }
 }
