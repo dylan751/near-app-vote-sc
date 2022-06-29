@@ -45,10 +45,11 @@ mod tests {
         let name = "Zuong".to_string();
         let role = Role::Admin;
         let email = "admin@gmail.com".to_string();
-        let near_account_id = "duongnh.testnet".to_string();
+        let blockchain_type = BlockchainType::Near;
+        let wallet_address = "duongnh.testnet".to_string();
 
         // --- Create the first user ---
-        contract.create_user(name, role, email, near_account_id);
+        contract.create_user(name, role, email, blockchain_type, wallet_address);
 
         let first_user_id = 0; // Id of the newly created user
         let mut first_user = contract.get_user_by_id(first_user_id);
@@ -59,6 +60,7 @@ mod tests {
             "Hoang".to_string(),
             Role::Employee,
             "hoangnv@gmail.com".to_string(),
+            BlockchainType::Near,
             "hoangnv.testnet".to_string(),
         );
         let mut all_users = contract.get_all_users(Some(0), Some(10));
@@ -71,6 +73,7 @@ mod tests {
             "Updated name".to_string(),
             Role::Admin,
             "updatedmail@gmail.com".to_string(),
+            BlockchainType::Near,
             "duongnh.testnet".to_string(),
         );
 

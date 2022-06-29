@@ -15,7 +15,8 @@ impl AppVoteContract {
         name: AccountId,
         role: Role,
         email: String,
-        near_account_id: AccountId,
+        blockchain_type: BlockchainType,
+        wallet_address: String,
     ) -> User {
         let before_storage_usage = env::storage_usage(); // Dùng để tính toán lượng near thừa khi deposit
 
@@ -28,7 +29,10 @@ impl AppVoteContract {
             name,
             role,
             email,
-            near_account_id,
+            user_wallet: UserWallet {
+                blockchain_type,
+                wallet_address,
+            },
             created_at: Some(env::block_timestamp()),
             updated_at: None,
         };
@@ -70,7 +74,8 @@ impl AppVoteContract {
         name: AccountId,
         role: Role,
         email: String,
-        near_account_id: AccountId,
+        blockchain_type: BlockchainType,
+        wallet_address: String,
     ) -> User {
         let user = self
             .users_by_id
@@ -81,7 +86,10 @@ impl AppVoteContract {
             name,
             role,
             email,
-            near_account_id,
+            user_wallet: UserWallet {
+                blockchain_type,
+                wallet_address,
+            },
             created_at: user.created_at,
             updated_at: Some(env::block_timestamp()),
         };

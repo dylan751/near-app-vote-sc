@@ -9,20 +9,25 @@ pub enum Role {
 
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
-pub enum Status {
-    Done,
-    Pending,
-    Failed,
+pub enum BlockchainType {
+    Near,
+}
+
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct UserWallet {
+    pub blockchain_type: BlockchainType, // Blockchain's type of this User Wallet
+    pub wallet_address: String,          // Wallet Account
 }
 
 // ----------------------------------- User Struct -----------------------------------
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct User {
-    pub name: AccountId,            // Name of the User
-    pub role: Role,                 // Role of the User
-    pub email: String,              // Email of the User
-    pub near_account_id: AccountId, // Near Account of the User
+    pub name: AccountId,         // Name of the User
+    pub role: Role,              // Role of the User
+    pub email: String,           // Email of the User
+    pub user_wallet: UserWallet, // Blockchain Wallet of the User
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
 }
@@ -64,7 +69,7 @@ pub struct PollOption {
 #[serde(crate = "near_sdk::serde")]
 pub struct Result {
     pub poll_option_id: PollOptionId, // Id of the Poll Option
-    pub total_vote: u32, // Total Vote for this User
+    pub total_vote: u32,              // Total Vote for this User
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
 }
