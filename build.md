@@ -91,7 +91,7 @@ near call btc-app-vote.duongnh.testnet delete_criteria '{"criteria_id": 0}' --ac
 1. Create a Poll:
 
 ```
-near call btc-app-vote.duongnh.testnet create_poll '{"criteria_ids": [0, 1], "user_id": 0, "title": "Test poll", "description": "Test poll description",  "start_at": 0, "end_at": 0}' --deposit 0.1 --accountId duongnh.testnet
+near call btc-app-vote.duongnh.testnet create_poll '{"criteria_ids": [0, 1], "created_by": 0, "title": "Test poll", "description": "Test poll description",  "start_at": 0, "end_at": 0}' --deposit 0.1 --accountId duongnh.testnet
 ```
 
 2. View list of Poll (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
