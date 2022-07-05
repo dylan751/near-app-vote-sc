@@ -12,8 +12,8 @@ impl AppVoteContract {
     #[payable]
     pub fn create_poll(
         &mut self,
-        criteria_id: CriteriaId,
-        user_id: UserId,
+        criteria_ids: Vec<CriteriaId>,
+        created_by: UserId,
         title: String,
         description: String,
         start_at: Option<Timestamp>,
@@ -23,22 +23,25 @@ impl AppVoteContract {
 
         let poll_id = self.polls_by_id_counter;
 
-        // Check if the criteria_id exists or not
-        assert!(
-            self.criterias_by_id.get(&criteria_id).is_some(),
-            "Criteria does not exist"
-        );
+        // Check if the all the criteria_ids exists or not
+        for criteria_id in criteria_ids.clone() {
+            assert!(
+                self.criterias_by_id.get(&criteria_id).is_some(),
+                "Some of the criterias does not exist"
+            );
+        }
         // Check if the user_id exists or not
         assert!(
-            self.users_by_id.get(&user_id).is_some(),
+            self.users_by_id.get(&created_by).is_some(),
             "User does not exist"
         );
         // Check if month is valid or not
 
         // Create new Poll
         let new_poll = Poll {
-            criteria_id,
-            user_id,
+            id: poll_id,
+            criteria_ids,
+            created_by,
             title,
             description,
             start_at,
@@ -92,8 +95,9 @@ impl AppVoteContract {
             .expect("This poll does not exist");
 
         let updated_poll = Poll {
-            criteria_id: poll.criteria_id,
-            user_id: poll.user_id,
+            id: poll.id,
+            criteria_ids: poll.criteria_ids,
+            created_by: poll.created_by,
             title: title,
             description: description,
             start_at,

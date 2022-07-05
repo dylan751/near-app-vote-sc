@@ -10,20 +10,21 @@ impl AppVoteContract {
      * - Refund redundant deposited NEAR back to user
      */
     #[payable]
-    pub fn create_criteria(&mut self, user_id: UserId, description: String) -> Criteria {
+    pub fn create_criteria(&mut self, created_by: UserId, description: String) -> Criteria {
         let before_storage_usage = env::storage_usage(); // Used to calculate the amount of redundant NEAR when users deposit
 
         let criteria_id = self.criterias_by_id_counter;
 
         // Check if the user_id exists or not
         assert!(
-            self.users_by_id.get(&user_id).is_some(),
+            self.users_by_id.get(&created_by).is_some(),
             "User does not exist"
         );
 
         // Create new Criteria
         let new_criteria = Criteria {
-            user_id,
+            id: criteria_id,
+            created_by,
             description,
             created_at: Some(env::block_timestamp()),
             updated_at: None,
@@ -73,7 +74,8 @@ impl AppVoteContract {
             .expect("This criteria does not exist");
 
         let updated_criteria = Criteria {
-            user_id: criteria.user_id, // The user who created this criteria (Can't be change)
+            id: criteria.id,
+            created_by: criteria.created_by, // The user who created this criteria (Can't be change)
             description,
             created_at: criteria.created_at,
             updated_at: Some(env::block_timestamp()),

@@ -26,6 +26,7 @@ impl AppVoteContract {
 
         // Create new User
         let new_user = User {
+            id: user_id,
             name,
             role,
             email,
@@ -83,6 +84,7 @@ impl AppVoteContract {
             .expect("This user does not exist");
 
         let updated_user = User {
+            id: user.id,
             name,
             role,
             email,

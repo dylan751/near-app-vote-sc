@@ -24,6 +24,7 @@ pub struct UserWallet {
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct User {
+    pub id: UserId,              // Id of the User
     pub name: AccountId,         // Name of the User
     pub role: Role,              // Role of the User
     pub email: String,           // Email of the User
@@ -36,7 +37,8 @@ pub struct User {
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Criteria {
-    pub user_id: UserId,     // Id of the User who created this Criteria
+    pub id: CriteriaId,      // Id of the Criteria
+    pub created_by: UserId,  // Id of the User who created this Criteria
     pub description: String, // Description of the Criteria
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
@@ -46,12 +48,13 @@ pub struct Criteria {
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Poll {
-    pub criteria_id: CriteriaId,     // Id of the Criteria to vote for
-    pub user_id: UserId,             // Id of the User who vote
-    pub title: String,               // Title of the Poll
-    pub description: String,         // Description of the Poll
-    pub start_at: Option<Timestamp>, // Start time of the Vote (In epoch -> nanoseconds)
-    pub end_at: Option<Timestamp>,   // End time of the Vote (In epoch -> nanoseconds)
+    pub id: PollId,                    // Id of the Poll
+    pub criteria_ids: Vec<CriteriaId>, // Array of Ids of the Criteria to vote for
+    pub created_by: UserId,            // Id of the User who vote
+    pub title: String,                 // Title of the Poll
+    pub description: String,           // Description of the Poll
+    pub start_at: Option<Timestamp>,   // Start time of the Vote (In epoch -> nanoseconds)
+    pub end_at: Option<Timestamp>,     // End time of the Vote (In epoch -> nanoseconds)
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
 }
@@ -60,6 +63,12 @@ pub struct Poll {
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct PollOption {
+    pub id: PollOptionId,
+    pub poll_id: PollId,       // Id of the Poll this Option belongs to
+    pub created_by: UserId,    // Id of the User who vote
+    pub title: String,         // Title of the PollOption
+    pub description: String,   // Description of the PollOption
+    pub user_ids: Vec<UserId>, // List of Users who can vote for this Option
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
 }
@@ -68,8 +77,11 @@ pub struct PollOption {
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Result {
-    pub poll_option_id: PollOptionId, // Id of the Poll Option
-    pub total_vote: u32,              // Total Vote for this User
+    pub id: ResultId,            // Id of the Result
+    pub criteria_id: CriteriaId, // Id of the Criteria this Vote belongs to
+    pub poll_id: PollId,         // Id of the Poll this Vote belongs to
+    pub user_id: UserId,         // Id of the User of the Vote
+    pub total_vote: u32,         // Total Vote for this User
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
 }

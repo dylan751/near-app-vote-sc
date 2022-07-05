@@ -99,7 +99,7 @@ mod tests {
 
         let first_criteria_id = 0; // Id of the newly created Criteria
         let mut first_criteria = contract.get_criteria_by_id(first_criteria_id);
-        assert_eq!(first_criteria.user_id, 1);
+        assert_eq!(first_criteria.created_by, 1);
         assert_eq!(
             first_criteria.description,
             "The most handsome employee".to_string()
@@ -135,25 +135,25 @@ mod tests {
         // ----------------------------------- POLL -----------------------------------
         // ----------------------------------------------------------------------------
         let user_id = 1; // User id 1 create this Poll
-        let criteria_id = 1; // This Poll belongs to Critetia id 1
+        let criteria_ids = vec![1]; // This Poll belongs to Criteria id 0
         let title = "Test poll".to_string();
         let description = "Test poll description".to_string();
         let start_at = Some(0);
         let end_at = Some(0);
 
         // --- Create the first criteria ---
-        contract.create_poll(criteria_id, user_id, title, description, start_at, end_at);
+        contract.create_poll(criteria_ids, user_id, title, description, start_at, end_at);
 
         let first_poll_id = 0; // Id of the newly created Poll
         let mut first_poll = contract.get_poll_by_id(first_poll_id);
-        assert_eq!(first_poll.user_id, 1);
-        assert_eq!(first_poll.criteria_id, 1);
+        assert_eq!(first_poll.created_by, 1);
+        assert_eq!(first_poll.criteria_ids, [1]);
         assert_eq!(first_poll.title, "Test poll".to_string());
         assert_eq!(first_poll.description, "Test poll description".to_string());
 
         // --- Create the second Poll ---
         contract.create_poll(
-            1,
+            vec![1],
             1,
             "Test poll 2".to_string(),
             "Test poll description 2".to_string(),

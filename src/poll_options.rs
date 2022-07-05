@@ -10,13 +10,38 @@ impl AppVoteContract {
      * - Refund redundant deposited NEAR back to user
      */
     #[payable]
-    pub fn create_poll_option(&mut self) -> PollOption {
+    pub fn create_poll_option(
+        &mut self,
+        poll_id: PollId,
+        created_by: UserId,
+        title: String,
+        description: String,
+        user_ids: Vec<UserId>
+    ) -> PollOption {
         let before_storage_usage = env::storage_usage(); // Used to calculate the amount of redundant NEAR when users deposit
 
         let poll_option_id = self.poll_options_by_id_counter;
 
+        // Check if the user_id exists or not
+        assert!(
+            self.users_by_id.get(&created_by).is_some(),
+            "User who created this Option does not exist"
+        );
+
+        // Check if the poll_id exists or not
+        assert!(
+            self.polls_by_id.get(&poll_id).is_some(),
+            "The poll this Option belongs to does not exist"
+        );
+
         // Create new Poll
         let new_poll_option = PollOption {
+            id: poll_option_id,
+            poll_id,
+            created_by,
+            title,
+            description,
+            user_ids,
             created_at: Some(env::block_timestamp()),
             updated_at: None,
         };
