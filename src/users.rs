@@ -68,6 +68,16 @@ impl AppVoteContract {
         self.users_by_id.get(&user_id).expect("User does not exist")
     }
 
+    // Get User's id by Wallet Account
+    pub fn get_user_by_wallet_address(&self, wallet_address: AccountId) -> Option<User> {
+        for user in self.users_by_id.values() {
+            if user.user_wallet.wallet_address == wallet_address {
+                return Some(user);
+            }
+        }
+        return None;
+    }
+
     // Update User information
     pub fn update_user(
         &mut self,

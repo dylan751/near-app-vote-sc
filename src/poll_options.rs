@@ -16,7 +16,7 @@ impl AppVoteContract {
         created_by: UserId,
         title: String,
         description: String,
-        user_ids: Vec<UserId>
+        user_ids: Vec<UserId>,
     ) -> PollOption {
         let before_storage_usage = env::storage_usage(); // Used to calculate the amount of redundant NEAR when users deposit
 
@@ -85,8 +85,36 @@ impl AppVoteContract {
             .expect("Poll Option does not exist")
     }
 
-    // // Update Poll Option information
-    // pub fn update_poll_option(&mut self, poll_option_id: PollOptionId) -> PollOption {}
+    // Update Poll Option information
+    pub fn update_poll_option(
+        &mut self,
+        poll_option_id: PollOptionId,
+        title: String,
+        description: String,
+        user_ids: Vec<UserId>,
+    ) -> PollOption {
+        let poll_option = self
+            .poll_options_by_id
+            .get(&poll_option_id)
+            .expect("This poll option does not exist");
+
+        let updated_poll_option = PollOption {
+            id: poll_option.id,
+            poll_id: poll_option.poll_id,
+            created_by: poll_option.created_by,
+            title: title,
+            description: description,
+            user_ids: user_ids,
+            created_at: poll_option.created_at,
+            updated_at: Some(env::block_timestamp()),
+        };
+
+        // Update polls_by_id
+        self.poll_options_by_id
+            .insert(&poll_option_id, &updated_poll_option);
+
+        updated_poll_option
+    }
 
     // Delete Poll Option from the Smart Contract
     pub fn delete_poll_option(&mut self, poll_option_id: PollOptionId) {
