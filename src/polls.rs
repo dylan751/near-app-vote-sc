@@ -31,11 +31,16 @@ impl AppVoteContract {
             );
         }
         // Check if the user_id exists or not
+        let user = self
+            .users_by_id
+            .get(&created_by)
+            .expect("User does not exist");
+
+        // Check if the User who create poll is Admin or not?
         assert!(
-            self.users_by_id.get(&created_by).is_some(),
-            "User does not exist"
+            matches!(user.role, Role::Admin),
+            "Only Admin can create polls"
         );
-        // Check if month is valid or not
 
         // Create new Poll
         let new_poll = Poll {

@@ -68,11 +68,11 @@ impl AppVoteContract {
                 StorageKey::PollOptionsByIdKey.try_to_vec().unwrap(),
             ),
             results_by_id: UnorderedMap::new(StorageKey::ResultsByIdKey.try_to_vec().unwrap()),
-            users_by_id_counter: 0,
-            polls_by_id_counter: 0,
-            criterias_by_id_counter: 0,
-            poll_options_by_id_counter: 0,
-            results_by_id_counter: 0,
+            users_by_id_counter: 1,
+            polls_by_id_counter: 1,
+            criterias_by_id_counter: 1,
+            poll_options_by_id_counter: 1,
+            results_by_id_counter: 1,
         }
     }
 }

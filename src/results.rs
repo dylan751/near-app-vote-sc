@@ -25,11 +25,19 @@ impl AppVoteContract {
             self.criterias_by_id.get(&criteria_id).is_some(),
             "Criteria does not exist"
         );
+
         // Check if the poll_id exists or not
-        assert!(
-            self.polls_by_id.get(&poll_id).is_some(),
-            "Poll does not exist"
-        );
+        let poll = self.polls_by_id.get(&poll_id).expect("Poll does not exist");
+        let mut is_belongs = 0;
+
+        // Check if this Criteria belongs to this Poll or not
+        for poll_criteria_id in poll.criteria_ids {
+            if poll_criteria_id == criteria_id {
+                is_belongs = 1;
+            }
+        }
+        assert_eq!(is_belongs, 1, "This Criteria does not belongs to this Poll");
+
         // Check if the user_id exists or not
         assert!(
             self.users_by_id.get(&user_id).is_some(),
@@ -79,12 +87,55 @@ impl AppVoteContract {
             .expect("Result does not exist")
     }
 
-    // Update Criteria information (When a user vote)
+    // Voting
+    // Update Result information (When a user vote)
     pub fn update_result(&mut self, result_id: ResultId) -> Result {
         let result = self
             .results_by_id
             .get(&result_id)
             .expect("This result does not exist");
+
+        // Check current time is between poll.start_time and poll.end_time or not
+        let poll = self
+            .polls_by_id
+            .get(&result.poll_id)
+            .expect("Related poll does not exist");
+        let vote_timestamp = env::block_timestamp(); // Voting timestamp
+
+        let base: u64 = 10;
+        let poll_start_at = poll.start_at.unwrap_or(0);
+        let poll_end_at = poll.end_at.unwrap_or(0);
+
+        let end_at_nano = poll_end_at * base.pow(6); // Voting timestamp in milliseconds
+        let start_at_nano = poll_start_at * base.pow(6); // Voting timestamp in milliseconds
+
+        // --------------------------- CHECK VOTING TIME ---------------------------
+        if poll_start_at != 0 {
+            if poll_end_at == 0 {
+                // If poll_end_at == 0 -> Only check poll_start_at
+                assert!(
+                    vote_timestamp > start_at_nano,
+                    "Cannot vote this Poll during this time"
+                );
+            } else {
+                // If poll_end_at != 0 -> Check both poll_start_at and poll_end_at
+                assert!(
+                    vote_timestamp < end_at_nano && vote_timestamp > start_at_nano,
+                    "Cannot vote this Poll during this time"
+                );
+            }
+        } else {
+            // If poll_end_at == 0 -> Don't have to check anything
+
+            // If poll_end_at != -> Only check poll_end_at
+            if poll_end_at != 0 {
+                assert!(
+                    vote_timestamp < end_at_nano,
+                    "Cannot vote this Poll during this time"
+                )
+            }
+        }
+        // -------------------------------------------------------------------------
 
         let updated_result = Result {
             id: result.id,
