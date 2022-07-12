@@ -50,6 +50,7 @@ pub struct Criteria {
 pub struct Poll {
     pub id: PollId,                    // Id of the Poll
     pub criteria_ids: Vec<CriteriaId>, // Array of Ids of the Criteria to vote for
+    pub poll_option_id: PollOptionId,  // Id of the Poll Option of this Poll (decides who can vote for this Poll)
     pub created_by: UserId,            // Id of the User who vote
     pub title: String,                 // Title of the Poll
     pub description: String,           // Description of the Poll
@@ -64,7 +65,6 @@ pub struct Poll {
 #[serde(crate = "near_sdk::serde")]
 pub struct PollOption {
     pub id: PollOptionId,
-    pub poll_id: PollId,       // Id of the Poll this Option belongs to
     pub created_by: UserId,    // Id of the User who vote
     pub title: String,         // Title of the PollOption
     pub description: String,   // Description of the PollOption

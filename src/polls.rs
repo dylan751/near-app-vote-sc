@@ -13,6 +13,7 @@ impl AppVoteContract {
     pub fn create_poll(
         &mut self,
         criteria_ids: Vec<CriteriaId>,
+        poll_option_id: PollOptionId,
         created_by: UserId,
         title: String,
         description: String,
@@ -30,6 +31,13 @@ impl AppVoteContract {
                 "Some of the criterias does not exist"
             );
         }
+
+        // Check if the pool_option_id exists or not
+        assert!(
+            self.poll_options_by_id.get(&poll_option_id).is_some(),
+            "Poll Option does not exist"
+        );
+
         // Check if the user_id exists or not
         let user = self
             .users_by_id
@@ -46,6 +54,7 @@ impl AppVoteContract {
         let new_poll = Poll {
             id: poll_id,
             criteria_ids,
+            poll_option_id,
             created_by,
             title,
             description,
@@ -89,6 +98,7 @@ impl AppVoteContract {
     pub fn update_poll(
         &mut self,
         poll_id: PollId,
+        poll_option_id: PollOptionId,
         title: String,
         description: String,
         start_at: Option<Timestamp>,
@@ -99,9 +109,16 @@ impl AppVoteContract {
             .get(&poll_id)
             .expect("This poll does not exist");
 
+        // Check if the pool_option_id exists or not
+        assert!(
+            self.poll_options_by_id.get(&poll_option_id).is_some(),
+            "Poll Option does not exist"
+        );
+
         let updated_poll = Poll {
             id: poll.id,
             criteria_ids: poll.criteria_ids,
+            poll_option_id,
             created_by: poll.created_by,
             title: title,
             description: description,

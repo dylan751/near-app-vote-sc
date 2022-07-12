@@ -51,7 +51,7 @@ mod tests {
         // --- Create the first user ---
         contract.create_user(name, role, email, blockchain_type, wallet_address);
 
-        let first_user_id = 0; // Id of the newly created user
+        let first_user_id = 1; // Id of the newly created user
         let mut first_user = contract.get_user_by_id(first_user_id);
         assert_eq!(first_user.name, "Zuong".to_string());
 
@@ -82,7 +82,7 @@ mod tests {
         assert_eq!(first_user.name, "Updated name".to_string());
 
         // --- Delete the first user ---
-        contract.delete_user(first_user_id);
+        contract.delete_user(2);
 
         // Check if the first user has been deleted
         all_users = contract.get_all_users(Some(0), Some(10));
@@ -97,7 +97,7 @@ mod tests {
         // --- Create the first criteria ---
         contract.create_criteria(user_id, description);
 
-        let first_criteria_id = 0; // Id of the newly created Criteria
+        let first_criteria_id = 1; // Id of the newly created Criteria
         let mut first_criteria = contract.get_criteria_by_id(first_criteria_id);
         assert_eq!(first_criteria.created_by, 1);
         assert_eq!(
@@ -125,26 +125,56 @@ mod tests {
         );
 
         // --- Delete the first Criteria ---
-        contract.delete_criteria(first_criteria_id);
+        contract.delete_criteria(2);
 
         // Check if the first Criteria has been deleted
         all_criterias = contract.get_all_criterias(Some(0), Some(10));
         assert_eq!(all_criterias.len(), 1);
 
         // ----------------------------------------------------------------------------
+        // ------------------------------- POLL OPTION --------------------------------
+        // ----------------------------------------------------------------------------
+        // Create the 3th user
+        let new_user = contract.create_user(
+            "Hoang".to_string(),
+            Role::Employee,
+            "hoangnv@gmail.com".to_string(),
+            BlockchainType::Near,
+            "hoangnv.testnet".to_string(),
+        );
+
+        assert_eq!(new_user.id, 3);
+
+        let created_by = first_user_id;
+        let title = "Test poll option".to_string();
+        let description = "Test poll option description".to_string();
+        let user_ids = vec![1, 3];
+
+        contract.create_poll_option(created_by, title, description, user_ids);
+
+        // ----------------------------------------------------------------------------
         // ----------------------------------- POLL -----------------------------------
         // ----------------------------------------------------------------------------
         let user_id = 1; // User id 1 create this Poll
-        let criteria_ids = vec![1]; // This Poll belongs to Criteria id 0
+        let criteria_ids = vec![1]; // This Poll belongs to Criteria id 1
+        let poll_option_id = 1;
         let title = "Test poll".to_string();
         let description = "Test poll description".to_string();
         let start_at = Some(0);
         let end_at = Some(0);
 
         // --- Create the first criteria ---
-        contract.create_poll(criteria_ids, user_id, title, description, start_at, end_at);
+        contract.create_poll(
+            criteria_ids,
+            poll_option_id,
+            user_id,
+            title,
+            description,
+            start_at,
+            end_at,
+        );
 
-        let first_poll_id = 0; // Id of the newly created Poll
+        let first_poll_id = 1; // Id of the newly created Poll
         let mut first_poll = contract.get_poll_by_id(first_poll_id);
         assert_eq!(first_poll.created_by, 1);
         assert_eq!(first_poll.criteria_ids, [1]);
@@ -154,6 +184,7 @@ mod tests {
         // --- Create the second Poll ---
         contract.create_poll(
             vec![1],
+            1,
             1,
             "Test poll 2".to_string(),
             "Test poll description 2".to_string(),
@@ -167,6 +198,7 @@ mod tests {
         // --- Update the first Poll ---
         contract.update_poll(
             first_poll_id,
+            1,
             "Updated Poll title".to_string(),
             "Updated Poll description".to_string(),
             Some(0),

@@ -12,7 +12,6 @@ impl AppVoteContract {
     #[payable]
     pub fn create_poll_option(
         &mut self,
-        poll_id: PollId,
         created_by: UserId,
         title: String,
         description: String,
@@ -28,16 +27,17 @@ impl AppVoteContract {
             "User who created this Option does not exist"
         );
 
-        // Check if the poll_id exists or not
-        assert!(
-            self.polls_by_id.get(&poll_id).is_some(),
-            "The poll this Option belongs to does not exist"
-        );
+        // Check if the all the user_ids exists or not
+        for user_id in user_ids.clone() {
+            assert!(
+                self.users_by_id.get(&user_id).is_some(),
+                "Some of the users does not exist"
+            );
+        }
 
         // Create new Poll
         let new_poll_option = PollOption {
             id: poll_option_id,
-            poll_id,
             created_by,
             title,
             description,
@@ -100,7 +100,6 @@ impl AppVoteContract {
 
         let updated_poll_option = PollOption {
             id: poll_option.id,
-            poll_id: poll_option.poll_id,
             created_by: poll_option.created_by,
             title: title,
             description: description,

@@ -38,6 +38,12 @@ near view btc-app-vote.duongnh.testnet get_all_users '{"from_index": 0, "limit":
 near view btc-app-vote.duongnh.testnet get_user_by_id '{"user_id": 0}'
 ```
 
+3. View 1 User by wallet_address (Ex: Near Wallet)
+
+```
+near view btc-app-vote.duongnh.testnet get_user_by_wallet_address '{"wallet_address": "duongnh.testnet"}'
+```
+
 4. Update User information
 
 ```
@@ -91,7 +97,7 @@ near call btc-app-vote.duongnh.testnet delete_criteria '{"criteria_id": 0}' --ac
 1. Create a Poll:
 
 ```
-near call btc-app-vote.duongnh.testnet create_poll '{"criteria_ids": [0, 1], "created_by": 0, "title": "Test poll", "description": "Test poll description",  "start_at": 0, "end_at": 0}' --deposit 0.1 --accountId duongnh.testnet
+near call btc-app-vote.duongnh.testnet create_poll '{"criteria_ids": [0, 1], "poll_option_id": 1, "created_by": 1, "title": "Test poll", "description": "Test poll description",  "start_at": 0, "end_at": 0}' --deposit 0.1 --accountId duongnh.testnet
 ```
 
 2. View list of Poll (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
@@ -109,7 +115,7 @@ near view btc-app-vote.duongnh.testnet get_poll_by_id '{"poll_id": 0}'
 4. Update Poll information
 
 ```
-near call btc-app-vote.duongnh.testnet update_poll '{"poll_id": 0, "title": "Updated title", "description": "Updated description", "start_at": 0, "end_at": 0}' --accountId duongnh.testnet
+near call btc-app-vote.duongnh.testnet update_poll '{"poll_id": 0, "poll_option_id": 1, "title": "Updated title", "description": "Updated description", "start_at": 0, "end_at": 0}' --accountId duongnh.testnet
 ```
 
 5. Delete a Poll
