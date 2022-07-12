@@ -33,10 +33,10 @@ impl AppVoteContract {
         }
 
         // Check if the pool_option_id exists or not
-        assert!(
-            self.poll_options_by_id.get(&poll_option_id).is_some(),
-            "Poll Option does not exist"
-        );
+        let poll_option = self
+            .poll_options_by_id
+            .get(&poll_option_id)
+            .expect("This poll option does not exist");
 
         // Check if the user_id exists or not
         let user = self
@@ -53,7 +53,7 @@ impl AppVoteContract {
         // Create new Poll
         let new_poll = Poll {
             id: poll_id,
-            criteria_ids,
+            criteria_ids: criteria_ids.clone(),
             poll_option_id,
             created_by,
             title,
@@ -74,6 +74,13 @@ impl AppVoteContract {
         let after_storage_usage = env::storage_usage();
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
+
+        // Insert data with total_vote = 0 into Result table
+        for criteria_id in criteria_ids.clone() {
+            for user_id in poll_option.clone().user_ids {
+                self.create_result(criteria_id, poll_id, user_id);
+            }
+        }
 
         new_poll
     }

@@ -61,7 +61,7 @@ pub struct Poll {
 }
 
 // ----------------------------------- Option Struct -----------------------------------
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct PollOption {
     pub id: PollOptionId,
