@@ -74,7 +74,7 @@ pub struct PollOption {
 }
 
 // ----------------------------------- Result Struct -----------------------------------
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Result {
     pub id: ResultId,            // Id of the Result
@@ -84,4 +84,13 @@ pub struct Result {
     pub total_vote: u32,         // Total Vote for this User
     pub created_at: Option<Timestamp>,
     pub updated_at: Option<Timestamp>,
+}
+
+// ----------------------------------- Result by Poll Struct -----------------------------------
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct ResultByPoll {
+    pub poll_id: PollId,         // Id of the Poll this Vote belongs to
+    pub user_id: UserId,         // Id of the User of the Vote
+    pub total_vote: u32,         // Total Vote for this User
 }

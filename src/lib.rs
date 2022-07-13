@@ -75,4 +75,26 @@ impl AppVoteContract {
             results_by_id_counter: 1,
         }
     }
+
+    // #[private]
+    // #[init(ignore_state)]
+    // pub fn migrate() -> Self {
+    //     let contract_v1: AppVoteContractV1 = env::state_read().expect("Cannot read contract state data");
+
+    //     AppVoteContract {
+    //         owner_id: contract_v1.owner_id,
+    //         users_by_id: contract_v1.users_by_id,
+    //         criterias_by_id: contract_v1.criterias_by_id,
+    //         polls_by_id: contract_v1.polls_by_id,
+    //         poll_options_by_id: contract_v1.poll_options_by_id,
+    //         results_by_id: contract_v1.results_by_id,
+
+    //         users_by_id_counter: contract_v1.users_by_id_counter,
+    //         polls_by_id_counter: contract_v1.polls_by_id_counter,
+    //         criterias_by_id_counter: contract_v1.criterias_by_id_counter,
+    //         poll_options_by_id_counter: contract_v1.poll_options_by_id_counter,
+    //         results_by_id_counter: contract_v1.results_by_id_counter,
+    //         results_by_poll_id_counter: 1,
+    //     }
+    // }
 }

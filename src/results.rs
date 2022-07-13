@@ -181,6 +181,49 @@ impl AppVoteContract {
         self.results_by_id.insert(&match_result_id, &updated_result);
     }
 
+    pub fn get_all_results_by_poll_id(&self, poll_id: PollId) -> Vec<ResultByPoll> {
+        // Check Poll exists or not
+        assert!(
+            self.polls_by_id.get(&poll_id).is_some(),
+            "Poll does not exist"
+        );
+
+        // Get the Array of Result of this Poll
+        let mut result_by_poll_id_set: Vec<Result> = vec![];
+        let mut return_set: Vec<ResultByPoll> = vec![];
+        for result in self.results_by_id.values() {
+            if result.poll_id == poll_id {
+                result_by_poll_id_set.push(result);
+            }
+        }
+
+        let poll = self
+            .polls_by_id
+            .get(&poll_id)
+            .expect("Poll does not exists");
+        let poll_option = self
+            .poll_options_by_id
+            .get(&poll.poll_option_id)
+            .expect("Poll Option does not exists");
+        for user_id in poll_option.user_ids {
+            let mut vote_count = 0;
+            for result in result_by_poll_id_set.clone() {
+                if result.user_id == user_id {
+                    vote_count += result.total_vote;
+                }
+            }
+            let new_result: ResultByPoll = ResultByPoll {
+                poll_id: poll_id,
+                user_id: user_id,
+                total_vote: vote_count,
+            };
+
+            return_set.push(new_result);
+        }
+
+        return_set
+    }
+
     // Delete Result from the Smart Contract
     pub fn delete_result(&mut self, result_id: PollOptionId) {
         self.results_by_id
