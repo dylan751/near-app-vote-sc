@@ -221,6 +221,9 @@ impl AppVoteContract {
             return_set.push(new_result);
         }
 
+        // Sort ranking desc
+        return_set.sort_by(|a, b| b.total_vote.cmp(&a.total_vote));
+
         return_set
     }
 
