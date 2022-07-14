@@ -92,10 +92,10 @@ mod tests {
         // ----------------------------------- CRITERIA -----------------------------------
         // --------------------------------------------------------------------------------
         let user_id = 1; // User id 1 create this criteria
-        let description = "The most handsome employee".to_string();
+        let descriptions = vec!["The most handsome employee".to_string()];
 
         // --- Create the first criteria ---
-        contract.create_criteria(user_id, description);
+        contract.create_criteria(user_id, descriptions);
 
         let first_criteria_id = 1; // Id of the newly created Criteria
         let mut first_criteria = contract.get_criteria_by_id(first_criteria_id);
@@ -106,7 +106,7 @@ mod tests {
         );
 
         // --- Create the second criteria ---
-        contract.create_criteria(1, "The most creative employee".to_string());
+        contract.create_criteria(1, vec!["The most creative employee".to_string()]);
         let mut all_criterias = contract.get_all_criterias(Some(0), Some(10));
         assert_eq!(all_criterias.len(), 2);
         assert_eq!(

@@ -10,10 +10,8 @@ impl AppVoteContract {
      * - Refund redundant deposited NEAR back to user
      */
     #[payable]
-    pub fn create_criteria(&mut self, created_by: UserId, description: String) -> Criteria {
+    pub fn create_criteria(&mut self, created_by: UserId, descriptions: Vec<String>) {
         let before_storage_usage = env::storage_usage(); // Used to calculate the amount of redundant NEAR when users deposit
-
-        let criteria_id = self.criterias_by_id_counter;
 
         // Check if the user_id exists or not
         assert!(
@@ -21,27 +19,29 @@ impl AppVoteContract {
             "User does not exist"
         );
 
-        // Create new Criteria
-        let new_criteria = Criteria {
-            id: criteria_id,
-            created_by,
-            description,
-            created_at: Some(env::block_timestamp()),
-            updated_at: None,
-        };
+        // Create multiple criterias due to Array of desc
+        for description in descriptions {
+            let criteria_id = self.criterias_by_id_counter;
 
-        // Insert new Criteria into criterias_by_id (list of Criterias of this Smart Contract)
-        self.criterias_by_id.insert(&criteria_id, &new_criteria);
+            // Create new Criteria
+            let new_criteria = Criteria {
+                id: criteria_id,
+                created_by,
+                description: description,
+                created_at: Some(env::block_timestamp()),
+                updated_at: None,
+            };
 
-        // Update Criteria Id Counter
-        self.criterias_by_id_counter += 1;
+            // Insert new Criteria into criterias_by_id (list of Criterias of this Smart Contract)
+            self.criterias_by_id.insert(&criteria_id, &new_criteria);
 
+            // Update Criteria Id Counter
+            self.criterias_by_id_counter += 1;
+        }
         // Used data storage = after_storage_usage - before_storage_usage
         let after_storage_usage = env::storage_usage();
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
-
-        new_criteria
     }
 
     // ----------------------------------------- READ -----------------------------------------

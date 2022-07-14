@@ -63,7 +63,7 @@ near call btc-app-vote.duongnh.testnet delete_user '{"user_id": 0}' --accountId 
 1. Create a Criteria:
 
 ```
-near call btc-app-vote.duongnh.testnet create_criteria '{"created_by": 0, "description": "The most handsome employee"}' --deposit 0.1 --accountId duongnh.testnet
+near call btc-app-vote.duongnh.testnet create_criteria '{"created_by": 1, "descriptions": ["The most handsome employee", "The most creative employee"]}' --deposit 0.1 --accountId duongnh.testnet
 ```
 
 2. View list of Criterias (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
