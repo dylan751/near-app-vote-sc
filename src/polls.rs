@@ -15,6 +15,7 @@ impl AppVoteContract {
         criteria_ids: Vec<CriteriaId>,
         poll_option_id: PollOptionId,
         created_by: UserId,
+        img_url: Option<String>,
         title: String,
         description: String,
         start_at: Option<Timestamp>,
@@ -56,6 +57,7 @@ impl AppVoteContract {
             criteria_ids: criteria_ids.clone(),
             poll_option_id,
             created_by,
+            img_url,
             title,
             description,
             start_at,
@@ -69,6 +71,19 @@ impl AppVoteContract {
 
         // Update Poll Id Counter
         self.polls_by_id_counter += 1;
+
+        // --- Insert into IsUserVote (is_voted) table ---
+        for user_id in poll_option.clone().user_ids {
+            let is_user_vote_id = self.is_user_votes_by_id_counter;
+            let new_is_user_vote = IsUserVote {
+                user_id,
+                poll_id,
+                is_voted: false,
+            };
+            self.is_user_votes_by_id
+                .insert(&is_user_vote_id, &new_is_user_vote);
+            self.is_user_votes_by_id_counter += 1;
+        }
 
         // Used data storage = after_storage_usage - before_storage_usage
         let after_storage_usage = env::storage_usage();
@@ -106,6 +121,7 @@ impl AppVoteContract {
         &mut self,
         poll_id: PollId,
         poll_option_id: PollOptionId,
+        img_url: Option<String>,
         title: String,
         description: String,
         start_at: Option<Timestamp>,
@@ -127,6 +143,7 @@ impl AppVoteContract {
             criteria_ids: poll.criteria_ids,
             poll_option_id,
             created_by: poll.created_by,
+            img_url,
             title: title,
             description: description,
             start_at,

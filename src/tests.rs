@@ -158,6 +158,7 @@ mod tests {
         let user_id = 1; // User id 1 create this Poll
         let criteria_ids = vec![1]; // This Poll belongs to Criteria id 1
         let poll_option_id = 1;
+        let img_url = None;
         let title = "Test poll".to_string();
         let description = "Test poll description".to_string();
         let start_at = Some(0);
@@ -168,6 +169,7 @@ mod tests {
             criteria_ids,
             poll_option_id,
             user_id,
+            img_url,
             title,
             description,
             start_at,
@@ -186,6 +188,7 @@ mod tests {
             vec![1],
             1,
             1,
+            None,
             "Test poll 2".to_string(),
             "Test poll description 2".to_string(),
             Some(0),
@@ -199,6 +202,7 @@ mod tests {
         contract.update_poll(
             first_poll_id,
             1,
+            None,
             "Updated Poll title".to_string(),
             "Updated Poll description".to_string(),
             Some(0),

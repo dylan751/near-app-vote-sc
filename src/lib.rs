@@ -8,9 +8,11 @@ pub type CriteriaId = u32;
 pub type PollId = u32;
 pub type PollOptionId = u32;
 pub type ResultId = u32;
+pub type IsUserVoteId = u32;
 
 pub use crate::criterias::*;
 pub use crate::custom_struct::*;
+pub use crate::is_user_votes::*;
 pub use crate::poll_options::*;
 pub use crate::polls::*;
 pub use crate::results::*;
@@ -20,6 +22,7 @@ use crate::utils::*;
 
 mod criterias;
 mod custom_struct;
+mod is_user_votes;
 mod poll_options;
 mod polls;
 mod results;
@@ -38,12 +41,14 @@ pub struct AppVoteContract {
     pub polls_by_id: UnorderedMap<PollId, Poll>,             // List of Votes in this Smart Contract
     pub poll_options_by_id: UnorderedMap<PollOptionId, PollOption>, // List of Results in this Smart Contract
     pub results_by_id: UnorderedMap<ResultId, Result>, // List of Results in this Smart Contract
+    pub is_user_votes_by_id: UnorderedMap<IsUserVoteId, IsUserVote>, // List to check if this User has voted for this Poll or not
 
     pub users_by_id_counter: u32,     // Counter of the list of User Id
     pub polls_by_id_counter: u32,     // Counter of the list of Poll Id
     pub criterias_by_id_counter: u32, // Counter of the list of Criteria Id
     pub poll_options_by_id_counter: u32, // Counter of the list of PollOption Id
     pub results_by_id_counter: u32,   // Counter of the list of Result Id
+    pub is_user_votes_by_id_counter: u32, // Counter of the list to check User has voted for Poll
 }
 
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -53,6 +58,7 @@ pub enum StorageKey {
     PollsByIdKey,
     PollOptionsByIdKey,
     ResultsByIdKey,
+    IsUserVotesByIdKey,
 }
 
 #[near_bindgen]
@@ -68,11 +74,15 @@ impl AppVoteContract {
                 StorageKey::PollOptionsByIdKey.try_to_vec().unwrap(),
             ),
             results_by_id: UnorderedMap::new(StorageKey::ResultsByIdKey.try_to_vec().unwrap()),
+            is_user_votes_by_id: UnorderedMap::new(
+                StorageKey::IsUserVotesByIdKey.try_to_vec().unwrap(),
+            ),
             users_by_id_counter: 1,
             polls_by_id_counter: 1,
             criterias_by_id_counter: 1,
             poll_options_by_id_counter: 1,
             results_by_id_counter: 1,
+            is_user_votes_by_id_counter: 1,
         }
     }
 }

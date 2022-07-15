@@ -89,20 +89,30 @@ impl AppVoteContract {
 
     // Voting
     // Update Result information (When a user vote)
-    pub fn vote(&mut self, criteria_id: CriteriaId, poll_id: PollId, user_id: UserId) {
+    pub fn vote(
+        &mut self,
+        voted_user_id: UserId,
+        poll_id: PollId,
+        criteria_user_array: Vec<CriteriaUser>,
+    ) {
         // Check Criteria, Poll, User exists or not
-        assert!(
-            self.criterias_by_id.get(&criteria_id).is_some(),
-            "Criteria does not exist"
-        );
         let poll = self
             .polls_by_id
             .get(&poll_id)
             .expect("Related poll does not exist");
-        assert!(
-            self.users_by_id.get(&user_id).is_some(),
-            "User does not exist"
-        );
+
+        for criteria_user in criteria_user_array.clone() {
+            assert!(
+                self.criterias_by_id
+                    .get(&criteria_user.criteria_id)
+                    .is_some(),
+                "Some of the Criteria does not exist"
+            );
+            assert!(
+                self.users_by_id.get(&criteria_user.user_id).is_some(),
+                "Some of the User does not exist"
+            );
+        }
 
         // Check current time is between poll.start_time and poll.end_time or not
         let vote_timestamp = env::block_timestamp(); // Voting timestamp
@@ -141,44 +151,64 @@ impl AppVoteContract {
             }
         }
         // -------------------------------------------------------------------------
-        // Get result_id
-        let mut match_result_id = 0; // Default value
-        let mut match_result = Result {
-            // Default value
-            id: 0,
-            criteria_id: 0,
-            poll_id: 0,
-            user_id: 0,
-            total_vote: 0,
-            created_at: None,
-            updated_at: None,
-        };
+        for criteria_user in criteria_user_array {
+            // Get result_id
+            let mut match_result_id = 0; // Default value
+            let mut match_result = Result {
+                // Default value
+                id: 0,
+                criteria_id: 0,
+                poll_id: 0,
+                user_id: 0,
+                total_vote: 0,
+                created_at: None,
+                updated_at: None,
+            };
 
-        for (result_id, result) in self.results_by_id.iter() {
-            if result.criteria_id == criteria_id
-                && result.poll_id == poll_id
-                && result.user_id == user_id
-            {
-                match_result_id = result_id;
-                match_result = result;
-                break;
+            for (result_id, result) in self.results_by_id.iter() {
+                if result.criteria_id == criteria_user.criteria_id
+                    && result.poll_id == poll_id
+                    && result.user_id == criteria_user.user_id
+                {
+                    match_result_id = result_id;
+                    match_result = result;
+                    break;
+                }
             }
+
+            assert!(match_result_id != 0, "Not found result"); // If match_result_id == 0 -> No appropriate result
+
+            let updated_result = Result {
+                id: match_result.id,
+                criteria_id: criteria_user.criteria_id,
+                poll_id,
+                user_id: criteria_user.user_id,
+                total_vote: match_result.total_vote + 1, // Increase the number of votes by one
+                created_at: match_result.created_at,
+                updated_at: Some(env::block_timestamp()),
+            };
+
+            // Update results_by_id
+            self.results_by_id.insert(&match_result_id, &updated_result);
         }
 
-        assert!(match_result_id != 0, "Not found result"); // If match_result_id == 0 -> No appropriate result
-
-        let updated_result = Result {
-            id: match_result.id,
-            criteria_id,
-            poll_id,
-            user_id,
-            total_vote: match_result.total_vote + 1, // Increase the number of votes by one
-            created_at: match_result.created_at,
-            updated_at: Some(env::block_timestamp()),
+        // Find the voted user -> Mark this User as has voted for this Pol
+        let mut match_is_user_vote_id = 0; // Default value
+        let mut match_is_user_vote = IsUserVote {
+            // Default value
+            user_id: 0,
+            poll_id: 0,
+            is_voted: false,
         };
-
-        // Update results_by_id
-        self.results_by_id.insert(&match_result_id, &updated_result);
+        for (is_user_vote_id, is_user_vote) in self.is_user_votes_by_id.iter() {
+            if is_user_vote.user_id == voted_user_id && is_user_vote.poll_id == poll_id {
+                match_is_user_vote_id = is_user_vote_id;
+                match_is_user_vote = is_user_vote;
+                match_is_user_vote.is_voted = true;
+            }
+        }
+        self.is_user_votes_by_id
+            .insert(&match_is_user_vote_id, &match_is_user_vote);
     }
 
     pub fn get_all_results_by_poll_id(&self, poll_id: PollId) -> Vec<ResultByPoll> {
