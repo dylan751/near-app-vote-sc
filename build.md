@@ -38,19 +38,19 @@ near view btc-app-vote.duongnh.testnet get_all_users '{"from_index": 0, "limit":
 near view btc-app-vote.duongnh.testnet get_user_by_id '{"user_id": 0}'
 ```
 
-3. View 1 User by wallet_address (Ex: Near Wallet)
+4. View 1 User by wallet_address (Ex: Near Wallet)
 
 ```
 near view btc-app-vote.duongnh.testnet get_user_by_wallet_address '{"wallet_address": "duongnh.testnet"}'
 ```
 
-4. Update User information
+5. Update User information
 
 ```
 near call btc-app-vote.duongnh.testnet update_user '{"user_id": 0, "name": "Hai", "role": "Admin", "email": "duong07052001@gmail.com", "blockchain_type": "Near", "wallet_address": "duongnh.testnet"}' --accountId duongnh.testnet
 ```
 
-5. Delete a User
+6. Delete a User
 
 ```
 near call btc-app-vote.duongnh.testnet delete_user '{"user_id": 0}' --accountId duongnh.testnet
@@ -112,7 +112,7 @@ near view btc-app-vote.duongnh.testnet get_all_poll_options '{"from_index": 0, "
 near view btc-app-vote.duongnh.testnet get_poll_option_by_id '{"poll_option_id": 1}'
 ```
 
-5. Delete a Poll Option
+4. Delete a Poll Option
 
 ```
 near call btc-app-vote.duongnh.testnet delete_poll_option '{"poll_option_id": 0}' --accountId duongnh.testnet
@@ -175,7 +175,7 @@ near view btc-app-vote.duongnh.testnet get_result_by_id '{"result_id": 0}'
 4. Update Result information
 
 ```
-near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_user_array": [{"criteria_id": 1,"user_id": 1}, {"criteria_id": 2,"user_id": 2}]}' --accountId duongnh.testnet
+near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_user_array": [{"criteria_id": 1,"user_id": 1}, {"criteria_id": 2,"user_id": 2}]}' --accountId duongnh.testnet --gas 300000000000000
 ```
 
 5. Delete a Result

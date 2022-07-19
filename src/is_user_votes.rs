@@ -4,16 +4,13 @@ use crate::*;
 impl AppVoteContract {
     pub fn is_voted(&self, user_id: UserId, poll_id: PollId) -> bool {
         let mut is_voted = false; // Default value
-        let mut is_found = false; // Check if found a record or no
 
         for (_is_user_vote_id, is_user_vote) in self.is_user_votes_by_id.iter() {
             if is_user_vote.user_id == user_id && is_user_vote.poll_id == poll_id {
                 is_voted = is_user_vote.is_voted;
-                is_found = true;
             }
         }
         
-        assert_eq!(is_found, true, "Not found record");
         is_voted
     }
 

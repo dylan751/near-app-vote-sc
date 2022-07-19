@@ -114,6 +114,13 @@ impl AppVoteContract {
             );
         }
 
+        // Check if User has voted for this Poll or not
+        assert_eq!(
+            self.is_voted(voted_user_id, poll_id),
+            false,
+            "This User has voted for this Poll"
+        );
+
         // Check current time is between poll.start_time and poll.end_time or not
         let vote_timestamp = env::block_timestamp(); // Voting timestamp
 

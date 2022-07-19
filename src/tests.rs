@@ -81,7 +81,7 @@ mod tests {
         first_user = contract.get_user_by_id(first_user_id);
         assert_eq!(first_user.name, "Updated name".to_string());
 
-        // --- Delete the first user ---
+        // --- Delete the second user ---
         contract.delete_user(2);
 
         // Check if the first user has been deleted
@@ -124,12 +124,21 @@ mod tests {
             "Updated description".to_string()
         );
 
-        // --- Delete the first Criteria ---
+        // --- Delete the second Criteria ---
         contract.delete_criteria(2);
 
         // Check if the first Criteria has been deleted
         all_criterias = contract.get_all_criterias(Some(0), Some(10));
         assert_eq!(all_criterias.len(), 1);
+
+        // --- Create the third criteria ---
+        contract.create_criteria(1, vec!["The most productive employee".to_string()]);
+        let all_criterias = contract.get_all_criterias(Some(0), Some(10));
+        assert_eq!(all_criterias.len(), 2);
+        assert_eq!(
+            all_criterias[1].description,
+            "The most productive employee".to_string()
+        );
 
         // ----------------------------------------------------------------------------
         // ------------------------------- POLL OPTION --------------------------------
@@ -156,7 +165,7 @@ mod tests {
         // ----------------------------------- POLL -----------------------------------
         // ----------------------------------------------------------------------------
         let user_id = 1; // User id 1 create this Poll
-        let criteria_ids = vec![1]; // This Poll belongs to Criteria id 1
+        let criteria_ids = vec![1, 3]; // This Poll belongs to Criteria id 1
         let poll_option_id = 1;
         let img_url = None;
         let title = "Test poll".to_string();
@@ -177,9 +186,9 @@ mod tests {
         );
 
         let first_poll_id = 1; // Id of the newly created Poll
-        let mut first_poll = contract.get_poll_by_id(first_poll_id);
+        let first_poll = contract.get_poll_by_id(first_poll_id);
         assert_eq!(first_poll.created_by, 1);
-        assert_eq!(first_poll.criteria_ids, [1]);
+        assert_eq!(first_poll.criteria_ids, [1, 3]);
         assert_eq!(first_poll.title, "Test poll".to_string());
         assert_eq!(first_poll.description, "Test poll description".to_string());
 
@@ -198,9 +207,9 @@ mod tests {
         assert_eq!(all_polls.len(), 2);
         assert_eq!(all_polls[1].title, "Test poll 2".to_string());
 
-        // --- Update the first Poll ---
+        // --- Update the second Poll ---
         contract.update_poll(
-            first_poll_id,
+            2,
             1,
             None,
             "Updated Poll title".to_string(),
@@ -210,18 +219,42 @@ mod tests {
         );
 
         // Check updated information
-        first_poll = contract.get_poll_by_id(first_poll_id);
-        assert_eq!(first_poll.title, "Updated Poll title".to_string());
+        let second_poll = contract.get_poll_by_id(2);
+        assert_eq!(second_poll.title, "Updated Poll title".to_string());
         assert_eq!(
-            first_poll.description,
+            second_poll.description,
             "Updated Poll description".to_string()
         );
 
-        // --- Delete the first Poll ---
-        contract.delete_poll(first_poll_id);
+        // --- Delete the second Poll ---
+        contract.delete_poll(2);
 
         // Check if the first Poll has been deleted
         all_polls = contract.get_all_polls(Some(0), Some(10));
         assert_eq!(all_polls.len(), 1);
+
+        // ----------------------------------------------------------------------------
+        // ----------------------------------- VOTE -----------------------------------
+        // ----------------------------------------------------------------------------
+
+        // Vote
+        assert_eq!(contract.is_voted(1, 1), false); // user_id 1 hasn't voted for poll_id 1
+
+        let voted_user_id = 1;
+        let poll_id = 1;
+        let criteria_user_array = vec![
+            CriteriaUser {
+                criteria_id: 1,
+                user_id: 3,
+            },
+            CriteriaUser {
+                criteria_id: 3,
+                user_id: 1,
+            },
+        ];
+        contract.vote(voted_user_id, poll_id, criteria_user_array);
+
+        // Check if user_id 1 has voted for poll_id 1
+        assert_eq!(contract.is_voted(1, 1), true);
     }
 }
