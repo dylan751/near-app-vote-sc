@@ -22,7 +22,29 @@ impl AppVoteContract {
 
         let user_id = self.users_by_id_counter;
 
-        // TODO: Check duplicate email
+        // Check duplicate wallet_address of the same blockchain_type
+        // Check only SC's owner / user with role Admin can create_user
+        let mut create_account_id = 0; // Default value
+        for (_user_id, user) in self.users_by_id.iter() {
+            if matches!(user.user_wallet.blockchain_type, _blockchain_type) {
+                assert!(
+                    user.user_wallet.wallet_address != wallet_address,
+                    "Duplicate wallet address for this blockchain!"
+                );
+            }
+            if user.user_wallet.wallet_address == env::predecessor_account_id() {
+                create_account_id = user.id;
+            }
+        }
+        let create_account = self
+            .users_by_id
+            .get(&create_account_id)
+            .expect("User does not exist");
+        assert!(
+            matches!(create_account.role, Role::Admin)
+                || self.owner_id == create_account.user_wallet.wallet_address,
+            "Only Admin or Smart Contract's owner can create new user"
+        );
 
         // Create new User
         let new_user = User {
