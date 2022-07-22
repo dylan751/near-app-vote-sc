@@ -95,6 +95,12 @@ impl AppVoteContract {
         poll_id: PollId,
         criteria_user_array: Vec<CriteriaUser>,
     ) {
+        // Check voted User exists or not
+        assert!(
+            self.users_by_id.get(&voted_user_id).is_some(),
+            "The user who votes do not exist"
+        );
+
         // Check Criteria, Poll, User exists or not
         let poll = self
             .polls_by_id
@@ -200,22 +206,16 @@ impl AppVoteContract {
         }
 
         // Find the voted user -> Mark this User as has voted for this Pol
-        let mut match_is_user_vote_id = 0; // Default value
-        let mut match_is_user_vote = IsUserVote {
+        let is_user_vote_id = self.is_user_votes_by_id_counter; // Default value
+        let is_user_vote = IsUserVote {
             // Default value
-            user_id: 0,
-            poll_id: 0,
-            is_voted: false,
+            user_id: voted_user_id,
+            poll_id,
+            is_voted: true,
         };
-        for (is_user_vote_id, is_user_vote) in self.is_user_votes_by_id.iter() {
-            if is_user_vote.user_id == voted_user_id && is_user_vote.poll_id == poll_id {
-                match_is_user_vote_id = is_user_vote_id;
-                match_is_user_vote = is_user_vote;
-                match_is_user_vote.is_voted = true;
-            }
-        }
         self.is_user_votes_by_id
-            .insert(&match_is_user_vote_id, &match_is_user_vote);
+            .insert(&is_user_vote_id, &is_user_vote);
+        self.is_user_votes_by_id_counter += 1;
     }
 
     pub fn get_all_results_by_poll_id(&self, poll_id: PollId) -> Vec<ResultByPoll> {

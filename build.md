@@ -137,7 +137,7 @@ near view btc-app-vote.duongnh.testnet get_all_polls '{"from_index": 0, "limit":
 3. View 1 Poll by poll_id
 
 ```
-near view btc-app-vote.duongnh.testnet get_poll_by_id '{"poll_id": 0}'
+near view btc-app-vote.duongnh.testnet get_poll_by_id '{"poll_id": 1}'
 ```
 
 4. Update Poll information
@@ -152,7 +152,7 @@ near call btc-app-vote.duongnh.testnet update_poll '{"poll_id": 0, "poll_option_
 near call btc-app-vote.duongnh.testnet delete_poll '{"poll_id": 0}' --accountId duongnh.testnet
 ```
 
-
+---
 ### Results
 1. View list of Results (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
 
@@ -166,16 +166,10 @@ near view btc-app-vote.duongnh.testnet get_all_results '{"from_index": 0, "limit
 near view btc-app-vote.duongnh.testnet get_all_results_by_poll_id '{"poll_id": 1}'
 ```
 
-3. View 1 Result by result_id
-
-```
-near view btc-app-vote.duongnh.testnet get_result_by_id '{"result_id": 0}'
-```
-
 4. Update Result information
 
 ```
-near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_user_array": [{"criteria_id": 1,"user_id": 1}, {"criteria_id": 2,"user_id": 2}]}' --accountId duongnh.testnet --gas 300000000000000
+near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_user_array": [{"criteria_id": 1,"user_id": 1}, {"criteria_id": 2,"user_id": 2}]}' --accountId duongnh.testnet --gas 30000000000000
 ```
 
 5. Delete a Result

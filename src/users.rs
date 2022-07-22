@@ -36,15 +36,17 @@ impl AppVoteContract {
                 create_account_id = user.id;
             }
         }
-        let create_account = self
-            .users_by_id
-            .get(&create_account_id)
-            .expect("User does not exist");
-        assert!(
-            matches!(create_account.role, Role::Admin)
-                || self.owner_id == create_account.user_wallet.wallet_address,
-            "Only Admin or Smart Contract's owner can create new user"
-        );
+        if env::predecessor_account_id() != self.owner_id {
+            let create_account = self
+                .users_by_id
+                .get(&create_account_id)
+                .expect("User does not exist");
+            assert!(
+                matches!(create_account.role, Role::Admin)
+                    || self.owner_id == create_account.user_wallet.wallet_address,
+                "Only Admin or Smart Contract's owner can create new user"
+            );
+        }
 
         // Create new User
         let new_user = User {

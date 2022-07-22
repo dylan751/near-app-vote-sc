@@ -72,19 +72,6 @@ impl AppVoteContract {
         // Update Poll Id Counter
         self.polls_by_id_counter += 1;
 
-        // --- Insert into IsUserVote (is_voted) table ---
-        for user_id in poll_option.clone().user_ids {
-            let is_user_vote_id = self.is_user_votes_by_id_counter;
-            let new_is_user_vote = IsUserVote {
-                user_id,
-                poll_id,
-                is_voted: false,
-            };
-            self.is_user_votes_by_id
-                .insert(&is_user_vote_id, &new_is_user_vote);
-            self.is_user_votes_by_id_counter += 1;
-        }
-
         // Used data storage = after_storage_usage - before_storage_usage
         let after_storage_usage = env::storage_usage();
         // Refund NEAR
