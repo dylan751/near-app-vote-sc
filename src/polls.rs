@@ -13,7 +13,9 @@ impl AppVoteContract {
     pub fn create_poll(
         &mut self,
         criteria_ids: Vec<CriteriaId>,
+        poll_option_id: PollOptionId,
         created_by: UserId,
+        img_url: Option<String>,
         title: String,
         description: String,
         start_at: Option<Timestamp>,
@@ -30,18 +32,32 @@ impl AppVoteContract {
                 "Some of the criterias does not exist"
             );
         }
+
+        // Check if the pool_option_id exists or not
+        let poll_option = self
+            .poll_options_by_id
+            .get(&poll_option_id)
+            .expect("This poll option does not exist");
+
         // Check if the user_id exists or not
+        let user = self
+            .users_by_id
+            .get(&created_by)
+            .expect("User does not exist");
+
+        // Check if the User who create poll is Admin or not?
         assert!(
-            self.users_by_id.get(&created_by).is_some(),
-            "User does not exist"
+            matches!(user.role, Role::Admin),
+            "Only Admin can create polls"
         );
-        // Check if month is valid or not
 
         // Create new Poll
         let new_poll = Poll {
             id: poll_id,
-            criteria_ids,
+            criteria_ids: criteria_ids.clone(),
+            poll_option_id,
             created_by,
+            img_url,
             title,
             description,
             start_at,
@@ -60,6 +76,13 @@ impl AppVoteContract {
         let after_storage_usage = env::storage_usage();
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
+
+        // Insert data with total_vote = 0 into Result table
+        for criteria_id in criteria_ids.clone() {
+            for user_id in poll_option.clone().user_ids {
+                self.create_result(criteria_id, poll_id, user_id);
+            }
+        }
 
         new_poll
     }
@@ -84,6 +107,8 @@ impl AppVoteContract {
     pub fn update_poll(
         &mut self,
         poll_id: PollId,
+        poll_option_id: PollOptionId,
+        img_url: Option<String>,
         title: String,
         description: String,
         start_at: Option<Timestamp>,
@@ -94,10 +119,18 @@ impl AppVoteContract {
             .get(&poll_id)
             .expect("This poll does not exist");
 
+        // Check if the pool_option_id exists or not
+        assert!(
+            self.poll_options_by_id.get(&poll_option_id).is_some(),
+            "Poll Option does not exist"
+        );
+
         let updated_poll = Poll {
             id: poll.id,
             criteria_ids: poll.criteria_ids,
+            poll_option_id,
             created_by: poll.created_by,
+            img_url,
             title: title,
             description: description,
             start_at,
