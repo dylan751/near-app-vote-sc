@@ -98,10 +98,12 @@ impl AppVoteContract {
     pub fn delete_criteria(&mut self, criteria_id: CriteriaId) {
         // Check if this Criteria is a foreign key in Poll or not
         for (_poll_id, poll) in self.polls_by_id.iter() {
-            assert!(
-                poll.criteria_ids.contains(&criteria_id) == false,
-                "Cannot delete this Criteria! This Criteria is linked to a Poll record!"
-            );
+            for criteria_option_id in poll.criteria_option_id_array.clone() {
+                assert!(
+                    criteria_option_id.criteria_id != criteria_id,
+                    "Cannot delete this Criteria! This Criteria is linked to a Poll record!"
+                );
+            }
         }
 
         // Delete Result belongs to this Criteria

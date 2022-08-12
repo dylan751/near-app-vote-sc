@@ -169,18 +169,6 @@ impl AppVoteContract {
             );
         }
 
-        // Delete Result belongs to this User
-        let mut remove_result_set = vec![]; // Vector of result_ids that need to be deleted
-        for (result_id, result) in self.results_by_id.iter() {
-            if result.user_id == user_id {
-                remove_result_set.push(result_id);
-            }
-        }
-        log!("Remove result set: {:?}", remove_result_set);
-        for result_id in remove_result_set {
-            self.results_by_id.remove(&result_id).unwrap();
-        }
-
         // Delete this User from IsUserVote
         let mut remove_is_user_vote_set = vec![]; // Vector of is_user_vote_ids that need to be deleted
         for (is_user_vote_id, is_user_vote) in self.is_user_votes_by_id.iter() {

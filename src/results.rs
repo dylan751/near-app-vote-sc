@@ -14,7 +14,7 @@ impl AppVoteContract {
         &mut self,
         criteria_id: CriteriaId,
         poll_id: PollId,
-        user_id: UserId,
+        option: String,
     ) -> Result {
         let before_storage_usage = env::storage_usage(); // Used to calculate the amount of redundant NEAR when users deposit
 
@@ -31,25 +31,19 @@ impl AppVoteContract {
         let mut is_belongs = 0;
 
         // Check if this Criteria belongs to this Poll or not
-        for poll_criteria_id in poll.criteria_ids {
-            if poll_criteria_id == criteria_id {
+        for criteria_option_id in poll.criteria_option_id_array {
+            if criteria_option_id.criteria_id == criteria_id {
                 is_belongs = 1;
             }
         }
         assert_eq!(is_belongs, 1, "This Criteria does not belongs to this Poll");
-
-        // Check if the user_id exists or not
-        assert!(
-            self.users_by_id.get(&user_id).is_some(),
-            "User does not exist"
-        );
 
         // Create new Result
         let new_result = Result {
             id: result_id,
             criteria_id,
             poll_id,
-            user_id,
+            option,
             total_vote: 0,
             created_at: Some(env::block_timestamp()),
             updated_at: None,
@@ -99,7 +93,7 @@ impl AppVoteContract {
         &mut self,
         voted_user_id: UserId,
         poll_id: PollId,
-        criteria_user_array: Vec<CriteriaUser>,
+        criteria_option_array: Vec<CriteriaOption>,
     ) {
         // Check voted User exists or not
         assert!(
@@ -113,16 +107,12 @@ impl AppVoteContract {
             .get(&poll_id)
             .expect("Related poll does not exist");
 
-        for criteria_user in criteria_user_array.clone() {
+        for criteria_option in criteria_option_array.clone() {
             assert!(
                 self.criterias_by_id
-                    .get(&criteria_user.criteria_id)
+                    .get(&criteria_option.criteria_id)
                     .is_some(),
                 "Some of the Criteria does not exist"
-            );
-            assert!(
-                self.users_by_id.get(&criteria_user.user_id).is_some(),
-                "Some of the User does not exist"
             );
         }
 
@@ -170,7 +160,7 @@ impl AppVoteContract {
             }
         }
         // -------------------------------------------------------------------------
-        for criteria_user in criteria_user_array {
+        for criteria_option in criteria_option_array {
             // Get result_id
             let mut match_result_id = 0; // Default value
             let mut match_result = Result {
@@ -178,16 +168,16 @@ impl AppVoteContract {
                 id: 0,
                 criteria_id: 0,
                 poll_id: 0,
-                user_id: 0,
+                option: "".to_string(),
                 total_vote: 0,
                 created_at: None,
                 updated_at: None,
             };
 
             for (result_id, result) in self.results_by_id.iter() {
-                if result.criteria_id == criteria_user.criteria_id
+                if result.criteria_id == criteria_option.criteria_id
                     && result.poll_id == poll_id
-                    && result.user_id == criteria_user.user_id
+                    && result.option == criteria_option.option
                 {
                     match_result_id = result_id;
                     match_result = result;
@@ -199,9 +189,9 @@ impl AppVoteContract {
 
             let updated_result = Result {
                 id: match_result.id,
-                criteria_id: criteria_user.criteria_id,
+                criteria_id: criteria_option.criteria_id,
                 poll_id,
-                user_id: criteria_user.user_id,
+                option: criteria_option.option,
                 total_vote: match_result.total_vote + 1, // Increase the number of votes by one
                 created_at: match_result.created_at,
                 updated_at: Some(env::block_timestamp()),
@@ -224,19 +214,28 @@ impl AppVoteContract {
         self.is_user_votes_by_id_counter += 1;
     }
 
-    pub fn get_all_results_by_poll_id(&self, poll_id: PollId) -> Vec<ResultByPoll> {
+    pub fn get_all_results_by_poll_criteria_id(
+        &self,
+        poll_id: PollId,
+        criteria_id: CriteriaId,
+    ) -> Vec<ResultByPollCriteria> {
         // Check Poll exists or not
         assert!(
             self.polls_by_id.get(&poll_id).is_some(),
             "Poll does not exist"
         );
+        // Check Criteria exists or not
+        assert!(
+            self.criterias_by_id.get(&criteria_id).is_some(),
+            "Criteria does not exist"
+        );
 
         // Get the Array of Result of this Poll
-        let mut result_by_poll_id_set: Vec<Result> = vec![];
-        let mut return_set: Vec<ResultByPoll> = vec![];
+        let mut result_by_poll_criteria_id_set: Vec<Result> = vec![];
+        let mut return_set: Vec<ResultByPollCriteria> = vec![];
         for result in self.results_by_id.values() {
-            if result.poll_id == poll_id {
-                result_by_poll_id_set.push(result);
+            if result.poll_id == poll_id && result.criteria_id == criteria_id {
+                result_by_poll_criteria_id_set.push(result);
             }
         }
 
@@ -244,24 +243,33 @@ impl AppVoteContract {
             .polls_by_id
             .get(&poll_id)
             .expect("Poll does not exists");
-        let poll_option = self
-            .poll_options_by_id
-            .get(&poll.poll_option_id)
-            .expect("Poll Option does not exists");
-        for user_id in poll_option.user_ids {
-            let mut vote_count = 0;
-            for result in result_by_poll_id_set.clone() {
-                if result.user_id == user_id {
-                    vote_count += result.total_vote;
-                }
-            }
-            let new_result: ResultByPoll = ResultByPoll {
-                poll_id: poll_id,
-                user_id: user_id,
-                total_vote: vote_count,
-            };
 
-            return_set.push(new_result);
+        for criteria_option_id in poll.criteria_option_id_array {
+            // Find the right Criteria inside this Poll to calculate vote
+            if criteria_option_id.criteria_id == criteria_id {
+                let option = self
+                    .poll_options_by_id
+                    .get(&criteria_option_id.poll_option_id)
+                    .expect("Poll Option does not exists");
+
+                for option in option.options {
+                    let mut vote_count = 0;
+                    for result in result_by_poll_criteria_id_set.clone() {
+                        if result.option == option {
+                            vote_count += result.total_vote;
+                        }
+                    }
+                    let new_result: ResultByPollCriteria = ResultByPollCriteria {
+                        poll_id: poll_id,
+                        criteria_id: criteria_id,
+                        option: option,
+                        total_vote: vote_count,
+                    };
+
+                    return_set.push(new_result);
+                }
+                break;
+            }
         }
 
         // Sort ranking desc
@@ -269,6 +277,7 @@ impl AppVoteContract {
 
         return_set
     }
+
 
     // Delete Result from the Smart Contract
     pub fn delete_result(&mut self, result_id: PollOptionId) {
