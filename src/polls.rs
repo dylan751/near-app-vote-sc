@@ -88,6 +88,12 @@ impl AppVoteContract {
     }
 
     // ----------------------------------------- READ -----------------------------------------
+    // Get total number of User in the Smart Contract
+    pub fn poll_total_supply(&self) -> u64 {
+        // Count the number of poll_id in polls_by_id
+        self.polls_by_id.len()
+    }
+
     // Get list of all Polls in this Smart Contract (with pagination)
     pub fn get_all_polls(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<Poll> {
         self.polls_by_id
@@ -103,6 +109,7 @@ impl AppVoteContract {
         self.polls_by_id.get(&poll_id).expect("Poll does not exist")
     }
 
+    // ----------------------------------------- UPDATE -----------------------------------------
     // Update Poll information
     pub fn update_poll(
         &mut self,
@@ -147,6 +154,31 @@ impl AppVoteContract {
 
     // Delete Poll from the Smart Contract
     pub fn delete_poll(&mut self, poll_id: PollId) {
+        // Delete Result belongs to this Poll
+        let mut remove_result_set = vec![]; // Vector of result_ids that need to be deleted
+        for (result_id, result) in self.results_by_id.iter() {
+            if result.poll_id == poll_id {
+                remove_result_set.push(result_id);
+            }
+        }
+        log!("Remove result set: {:?}", remove_result_set);
+        for result_id in remove_result_set {
+            self.results_by_id.remove(&result_id).unwrap();
+        }
+
+        // Delete this Poll from IsUserVote
+        let mut remove_is_user_vote_set = vec![]; // Vector of is_user_vote_ids that need to be deleted
+        for (is_user_vote_id, is_user_vote) in self.is_user_votes_by_id.iter() {
+            if is_user_vote.poll_id == poll_id {
+                remove_is_user_vote_set.push(is_user_vote_id);
+            }
+        }
+        log!("Remove is user vote set: {:?}", remove_is_user_vote_set);
+        for is_user_vote_id in remove_is_user_vote_set {
+            self.is_user_votes_by_id.remove(&is_user_vote_id).unwrap();
+        }
+
+        // Delete Poll
         self.polls_by_id
             .remove(&poll_id)
             .expect("This poll does not exists");

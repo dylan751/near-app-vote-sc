@@ -10,7 +10,7 @@ impl AppVoteContract {
                 is_voted = is_user_vote.is_voted;
             }
         }
-        
+
         is_voted
     }
 

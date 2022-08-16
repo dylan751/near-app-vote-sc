@@ -62,6 +62,12 @@ impl AppVoteContract {
     }
 
     // ----------------------------------------- READ -----------------------------------------
+    // Get total number of User in the Smart Contract
+    pub fn poll_option_total_supply(&self) -> u64 {
+        // Count the number of poll_option_id in poll_options_by_id
+        self.poll_options_by_id.len()
+    }
+
     // Get list of all Poll Options in this Smart Contract (with pagination)
     pub fn get_all_poll_options(
         &self,
@@ -85,6 +91,7 @@ impl AppVoteContract {
             .expect("Poll Option does not exist")
     }
 
+    // ----------------------------------------- UPDATE -----------------------------------------
     // Update Poll Option information
     pub fn update_poll_option(
         &mut self,
@@ -117,6 +124,15 @@ impl AppVoteContract {
 
     // Delete Poll Option from the Smart Contract
     pub fn delete_poll_option(&mut self, poll_option_id: PollOptionId) {
+        // Check if this Poll Option is a foreign key in Poll or not
+        for (_poll_id, poll) in self.polls_by_id.iter() {
+            assert!(
+                poll.poll_option_id != poll_option_id,
+                "Cannot delete this Poll Option! This Poll Option is linked to a Poll record!"
+            );
+        }
+
+        // Delete Poll Option
         self.poll_options_by_id
             .remove(&poll_option_id)
             .expect("This poll_option does not exists");

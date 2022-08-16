@@ -45,6 +45,12 @@ impl AppVoteContract {
     }
 
     // ----------------------------------------- READ -----------------------------------------
+    // Get total number of User in the Smart Contract
+    pub fn criteria_total_supply(&self) -> u64 {
+        // Count the number of criteria_id in criterias_by_id
+        self.criterias_by_id.len()
+    }
+
     // Get list of all Criterias in this Smart Contract (with pagination)
     pub fn get_all_criterias(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<Criteria> {
         self.criterias_by_id
@@ -62,6 +68,7 @@ impl AppVoteContract {
             .expect("Criteria does not exist")
     }
 
+    // ----------------------------------------- UPDATE -----------------------------------------
     // Update Criteria information
     pub fn update_criteria(
         &mut self,
@@ -89,6 +96,27 @@ impl AppVoteContract {
 
     // Delete Criteria from the Smart Contract
     pub fn delete_criteria(&mut self, criteria_id: CriteriaId) {
+        // Check if this Criteria is a foreign key in Poll or not
+        for (_poll_id, poll) in self.polls_by_id.iter() {
+            assert!(
+                poll.criteria_ids.contains(&criteria_id) == false,
+                "Cannot delete this Criteria! This Criteria is linked to a Poll record!"
+            );
+        }
+
+        // Delete Result belongs to this Criteria
+        let mut remove_result_set = vec![]; // Vector of result_ids that need to be deleted
+        for (result_id, result) in self.results_by_id.iter() {
+            if result.criteria_id == criteria_id {
+                remove_result_set.push(result_id);
+            }
+        }
+        log!("Remove result set: {:?}", remove_result_set);
+        for result_id in remove_result_set {
+            self.results_by_id.remove(&result_id).unwrap();
+        }
+
+        // Delete Criteria
         self.criterias_by_id
             .remove(&criteria_id)
             .expect("This criteria does not exists");

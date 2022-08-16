@@ -77,6 +77,12 @@ impl AppVoteContract {
     }
 
     // ----------------------------------------- READ -----------------------------------------
+    // Get total number of User in the Smart Contract
+    pub fn user_total_supply(&self) -> u64 {
+        // Count the number of user_id in users_by_id
+        self.users_by_id.len()
+    }
+
     // Get list of all Users in this Smart Contract (with pagination)
     pub fn get_all_users(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<User> {
         self.users_by_id
@@ -102,6 +108,7 @@ impl AppVoteContract {
         return None;
     }
 
+    // ----------------------------------------- UPDATE -----------------------------------------
     // Update User information
     pub fn update_user(
         &mut self,
@@ -138,6 +145,55 @@ impl AppVoteContract {
 
     // Delete User from the Smart Contract
     pub fn delete_user(&mut self, user_id: UserId) {
+        // TODO: Check only admin can call this function
+
+        // Check if this User is a foreign key in Criteria or not
+        for (_criteria_id, criteria) in self.criterias_by_id.iter() {
+            assert!(
+                criteria.created_by != user_id,
+                "Cannot delete this User! This User is linked to a Criteria record!"
+            );
+        }
+        // Check if this User is a foreign key in Poll or not
+        for (_poll_id, poll) in self.polls_by_id.iter() {
+            assert!(
+                poll.created_by != user_id,
+                "Cannot delete this User! This User is linked to a Poll record!"
+            );
+        }
+        // Check if this User is a foreign key in PollOption or not
+        for (_poll_option_id, poll_option) in self.poll_options_by_id.iter() {
+            assert!(
+                poll_option.created_by != user_id,
+                "Cannot delete this User! This User is linked to a Poll Option record!"
+            );
+        }
+
+        // Delete Result belongs to this User
+        let mut remove_result_set = vec![]; // Vector of result_ids that need to be deleted
+        for (result_id, result) in self.results_by_id.iter() {
+            if result.user_id == user_id {
+                remove_result_set.push(result_id);
+            }
+        }
+        log!("Remove result set: {:?}", remove_result_set);
+        for result_id in remove_result_set {
+            self.results_by_id.remove(&result_id).unwrap();
+        }
+
+        // Delete this User from IsUserVote
+        let mut remove_is_user_vote_set = vec![]; // Vector of is_user_vote_ids that need to be deleted
+        for (is_user_vote_id, is_user_vote) in self.is_user_votes_by_id.iter() {
+            if is_user_vote.user_id == user_id {
+                remove_is_user_vote_set.push(is_user_vote_id);
+            }
+        }
+        log!("Remove is user vote set: {:?}", remove_is_user_vote_set);
+        for is_user_vote_id in remove_is_user_vote_set {
+            self.is_user_votes_by_id.remove(&is_user_vote_id).unwrap();
+        }
+
+        // Delete User
         self.users_by_id
             .remove(&user_id)
             .expect("This user does not exists");

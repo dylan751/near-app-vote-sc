@@ -70,6 +70,12 @@ impl AppVoteContract {
     }
 
     // ----------------------------------------- READ -----------------------------------------
+    // Get total number of Result in the Smart Contract
+    pub fn result_total_supply(&self) -> u64 {
+        // Count the number of result_id in results_by_id
+        self.results_by_id.len()
+    }
+
     // Get list of all Results in this Smart Contract (with pagination)
     pub fn get_all_results(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<Result> {
         self.results_by_id
