@@ -89,6 +89,19 @@ impl AppVoteContract {
             }
         }
 
+        // EVENT LOG
+        let create_poll_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::CreatePoll,
+            data: serde_json::to_string(&new_poll).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&create_poll_log).unwrap()
+        );
+
         new_poll
     }
 
@@ -145,6 +158,19 @@ impl AppVoteContract {
 
         // Update polls_by_id
         self.polls_by_id.insert(&poll_id, &updated_poll);
+
+        // EVENT LOG
+        let update_poll_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdatePoll,
+            data: serde_json::to_string(&updated_poll).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_poll_log).unwrap()
+        );
 
         updated_poll
     }

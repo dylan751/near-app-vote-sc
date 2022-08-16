@@ -37,6 +37,19 @@ impl AppVoteContract {
 
             // Update Criteria Id Counter
             self.criterias_by_id_counter += 1;
+
+            // EVENT LOG
+            let create_criteria_log: EventLog = EventLog {
+                standard: "nep297".to_string(),
+                version: "1.0.0".to_string(),
+                event: EventLogVariant::CreateCriteria,
+                data: serde_json::to_string(&new_criteria).unwrap(),
+            };
+
+            log!(
+                "EVENT_JSON:{}",
+                serde_json::to_string(&create_criteria_log).unwrap()
+            );
         }
         // Used data storage = after_storage_usage - before_storage_usage
         let after_storage_usage = env::storage_usage();
@@ -90,6 +103,19 @@ impl AppVoteContract {
 
         // Update criterias_by_id
         self.criterias_by_id.insert(&criteria_id, &updated_criteria);
+
+         // EVENT LOG
+         let update_criteria_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdateCriteria,
+            data: serde_json::to_string(&updated_criteria).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_criteria_log).unwrap()
+        );
 
         updated_criteria
     }

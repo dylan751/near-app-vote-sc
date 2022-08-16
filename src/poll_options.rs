@@ -50,6 +50,19 @@ impl AppVoteContract {
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
 
+        // EVENT LOG
+        let create_poll_option_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::CreatePollOption,
+            data: serde_json::to_string(&new_poll_option).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&create_poll_option_log).unwrap()
+        );
+
         new_poll_option
     }
 
@@ -110,6 +123,19 @@ impl AppVoteContract {
         // Update polls_by_id
         self.poll_options_by_id
             .insert(&poll_option_id, &updated_poll_option);
+
+        // EVENT LOG
+        let update_poll_option_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdatePollOption,
+            data: serde_json::to_string(&updated_poll_option).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_poll_option_log).unwrap()
+        );
 
         updated_poll_option
     }

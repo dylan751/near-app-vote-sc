@@ -73,6 +73,19 @@ impl AppVoteContract {
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
 
+        // EVENT LOG
+        let create_user_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::CreateUser,
+            data: serde_json::to_string(&new_user).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&create_user_log).unwrap()
+        );
+
         new_user
     }
 
@@ -124,6 +137,16 @@ impl AppVoteContract {
             .get(&user_id)
             .expect("This user does not exist");
 
+        // Check duplicate wallet_address of the same blockchain_type
+        for (_user_id, user) in self.users_by_id.iter() {
+            if matches!(user.user_wallet.blockchain_type, _blockchain_type) {
+                assert!(
+                    user.user_wallet.wallet_address != wallet_address || user.id == user_id,
+                    "Duplicate wallet address for this blockchain!"
+                );
+            }
+        }
+
         let updated_user = User {
             id: user.id,
             name,
@@ -139,6 +162,19 @@ impl AppVoteContract {
 
         // Update users_by_id
         self.users_by_id.insert(&user_id, &updated_user);
+
+        // EVENT LOG
+        let update_user_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdateUser,
+            data: serde_json::to_string(&updated_user).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_user_log).unwrap()
+        );
 
         updated_user
     }
