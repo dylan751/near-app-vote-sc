@@ -1,13 +1,6 @@
 /**
  * Để các ứng dụng (bên thứ 3) theo dõi được các
-<<<<<<< HEAD
  * hành động (events) cho tất cả các Near-driven apps.
-=======
- * hành động mint, transfer, burn events cho tất
- * cả các NFT-driven apps.
- * VD: NEAR Wallet có thể gọi thêm các methods `nft_metadata`
- * và `nft_tokens_for_owner` để hiển thị NFT chính xác
->>>>>>> 068505a... Add Event Log
  */
 use std::fmt;
 
@@ -71,10 +64,6 @@ impl fmt::Display for EventLog {
 // pub struct NftMintLog {
 //     pub owner_id: String,
 //     pub token_ids: Vec<String>,
-
-//     #[serde(skip_serializing_if = "Option::is_none")]
-//     pub memo: Option<String>,
-// }
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub struct NftMintLog {
