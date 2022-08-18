@@ -15,7 +15,7 @@ impl AppVoteContract {
         created_by: UserId,
         title: String,
         description: String,
-        user_ids: Vec<UserId>,
+        options: Vec<String>,
     ) -> PollOption {
         let before_storage_usage = env::storage_usage(); // Used to calculate the amount of redundant NEAR when users deposit
 
@@ -27,21 +27,13 @@ impl AppVoteContract {
             "User who created this Option does not exist"
         );
 
-        // Check if the all the user_ids exists or not
-        for user_id in user_ids.clone() {
-            assert!(
-                self.users_by_id.get(&user_id).is_some(),
-                "Some of the users does not exist"
-            );
-        }
-
         // Create new Poll
         let new_poll_option = PollOption {
             id: poll_option_id,
             created_by,
             title,
             description,
-            user_ids,
+            options,
             created_at: Some(env::block_timestamp()),
             updated_at: None,
         };
@@ -57,6 +49,19 @@ impl AppVoteContract {
         let after_storage_usage = env::storage_usage();
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
+
+        // EVENT LOG
+        let create_poll_option_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::CreatePollOption,
+            data: serde_json::to_string(&new_poll_option).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&create_poll_option_log).unwrap()
+        );
 
         new_poll_option
     }
@@ -98,7 +103,7 @@ impl AppVoteContract {
         poll_option_id: PollOptionId,
         title: String,
         description: String,
-        user_ids: Vec<UserId>,
+        options: Vec<String>,
     ) -> PollOption {
         let poll_option = self
             .poll_options_by_id
@@ -110,7 +115,7 @@ impl AppVoteContract {
             created_by: poll_option.created_by,
             title: title,
             description: description,
-            user_ids: user_ids,
+            options: options,
             created_at: poll_option.created_at,
             updated_at: Some(env::block_timestamp()),
         };
@@ -119,6 +124,19 @@ impl AppVoteContract {
         self.poll_options_by_id
             .insert(&poll_option_id, &updated_poll_option);
 
+        // EVENT LOG
+        let update_poll_option_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdatePollOption,
+            data: serde_json::to_string(&updated_poll_option).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_poll_option_log).unwrap()
+        );
+
         updated_poll_option
     }
 
@@ -126,10 +144,12 @@ impl AppVoteContract {
     pub fn delete_poll_option(&mut self, poll_option_id: PollOptionId) {
         // Check if this Poll Option is a foreign key in Poll or not
         for (_poll_id, poll) in self.polls_by_id.iter() {
-            assert!(
-                poll.poll_option_id != poll_option_id,
-                "Cannot delete this Poll Option! This Poll Option is linked to a Poll record!"
-            );
+            for criteria_option_id in poll.criteria_option_id_array.clone() {
+                assert!(
+                    criteria_option_id.poll_option_id != poll_option_id,
+                    "Cannot delete this Poll Option! This Poll Option is linked to a Poll record!"
+                );
+            }
         }
 
         // Delete Poll Option

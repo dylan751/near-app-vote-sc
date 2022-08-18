@@ -12,8 +12,7 @@ impl AppVoteContract {
     #[payable]
     pub fn create_poll(
         &mut self,
-        criteria_ids: Vec<CriteriaId>,
-        poll_option_id: PollOptionId,
+        criteria_option_id_array: Vec<CriteriaOptionId>,
         created_by: UserId,
         img_url: Option<String>,
         title: String,
@@ -25,19 +24,22 @@ impl AppVoteContract {
 
         let poll_id = self.polls_by_id_counter;
 
-        // Check if the all the criteria_ids exists or not
-        for criteria_id in criteria_ids.clone() {
+        for criteria_option_id in criteria_option_id_array.clone() {
+            // Check if the all the criteria_ids exists or not
             assert!(
-                self.criterias_by_id.get(&criteria_id).is_some(),
+                self.criterias_by_id
+                    .get(&criteria_option_id.criteria_id)
+                    .is_some(),
                 "Some of the criterias does not exist"
             );
+            // Check if the pool_option_id exists or not
+            assert!(
+                self.poll_options_by_id
+                    .get(&criteria_option_id.poll_option_id)
+                    .is_some(),
+                "Some of the poll options does not exist"
+            );
         }
-
-        // Check if the pool_option_id exists or not
-        let poll_option = self
-            .poll_options_by_id
-            .get(&poll_option_id)
-            .expect("This poll option does not exist");
 
         // Check if the user_id exists or not
         let user = self
@@ -54,8 +56,7 @@ impl AppVoteContract {
         // Create new Poll
         let new_poll = Poll {
             id: poll_id,
-            criteria_ids: criteria_ids.clone(),
-            poll_option_id,
+            criteria_option_id_array: criteria_option_id_array.clone(),
             created_by,
             img_url,
             title,
@@ -78,11 +79,28 @@ impl AppVoteContract {
         refund_deposit(after_storage_usage - before_storage_usage);
 
         // Insert data with total_vote = 0 into Result table
-        for criteria_id in criteria_ids.clone() {
-            for user_id in poll_option.clone().user_ids {
-                self.create_result(criteria_id, poll_id, user_id);
+        for criteria_option_id in criteria_option_id_array.clone() {
+            let poll_option = self
+                .poll_options_by_id
+                .get(&criteria_option_id.poll_option_id)
+                .expect("This Poll does not exists");
+            for option in poll_option.clone().options {
+                self.create_result(criteria_option_id.criteria_id, poll_id, option);
             }
         }
+
+        // EVENT LOG
+        let create_poll_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::CreatePoll,
+            data: serde_json::to_string(&new_poll).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&create_poll_log).unwrap()
+        );
 
         new_poll
     }
@@ -114,7 +132,6 @@ impl AppVoteContract {
     pub fn update_poll(
         &mut self,
         poll_id: PollId,
-        poll_option_id: PollOptionId,
         img_url: Option<String>,
         title: String,
         description: String,
@@ -126,16 +143,9 @@ impl AppVoteContract {
             .get(&poll_id)
             .expect("This poll does not exist");
 
-        // Check if the pool_option_id exists or not
-        assert!(
-            self.poll_options_by_id.get(&poll_option_id).is_some(),
-            "Poll Option does not exist"
-        );
-
         let updated_poll = Poll {
             id: poll.id,
-            criteria_ids: poll.criteria_ids,
-            poll_option_id,
+            criteria_option_id_array: poll.criteria_option_id_array,
             created_by: poll.created_by,
             img_url,
             title: title,
@@ -148,6 +158,19 @@ impl AppVoteContract {
 
         // Update polls_by_id
         self.polls_by_id.insert(&poll_id, &updated_poll);
+
+        // EVENT LOG
+        let update_poll_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdatePoll,
+            data: serde_json::to_string(&updated_poll).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_poll_log).unwrap()
+        );
 
         updated_poll
     }

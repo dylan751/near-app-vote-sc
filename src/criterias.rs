@@ -37,6 +37,19 @@ impl AppVoteContract {
 
             // Update Criteria Id Counter
             self.criterias_by_id_counter += 1;
+
+            // EVENT LOG
+            let create_criteria_log: EventLog = EventLog {
+                standard: "nep297".to_string(),
+                version: "1.0.0".to_string(),
+                event: EventLogVariant::CreateCriteria,
+                data: serde_json::to_string(&new_criteria).unwrap(),
+            };
+
+            log!(
+                "EVENT_JSON:{}",
+                serde_json::to_string(&create_criteria_log).unwrap()
+            );
         }
         // Used data storage = after_storage_usage - before_storage_usage
         let after_storage_usage = env::storage_usage();
@@ -91,6 +104,19 @@ impl AppVoteContract {
         // Update criterias_by_id
         self.criterias_by_id.insert(&criteria_id, &updated_criteria);
 
+         // EVENT LOG
+         let update_criteria_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdateCriteria,
+            data: serde_json::to_string(&updated_criteria).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_criteria_log).unwrap()
+        );
+
         updated_criteria
     }
 
@@ -98,10 +124,12 @@ impl AppVoteContract {
     pub fn delete_criteria(&mut self, criteria_id: CriteriaId) {
         // Check if this Criteria is a foreign key in Poll or not
         for (_poll_id, poll) in self.polls_by_id.iter() {
-            assert!(
-                poll.criteria_ids.contains(&criteria_id) == false,
-                "Cannot delete this Criteria! This Criteria is linked to a Poll record!"
-            );
+            for criteria_option_id in poll.criteria_option_id_array.clone() {
+                assert!(
+                    criteria_option_id.criteria_id != criteria_id,
+                    "Cannot delete this Criteria! This Criteria is linked to a Poll record!"
+                );
+            }
         }
 
         // Delete Result belongs to this Criteria

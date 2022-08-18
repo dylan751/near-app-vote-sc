@@ -157,16 +157,18 @@ mod tests {
         let created_by = first_user_id;
         let title = "Test poll option".to_string();
         let description = "Test poll option description".to_string();
-        let user_ids = vec![1, 3];
+        let options = vec!["Zuong".to_string(), "Manh".to_string()];
 
-        contract.create_poll_option(created_by, title, description, user_ids);
+        contract.create_poll_option(created_by, title, description, options);
 
         // ----------------------------------------------------------------------------
         // ----------------------------------- POLL -----------------------------------
         // ----------------------------------------------------------------------------
         let user_id = 1; // User id 1 create this Poll
-        let criteria_ids = vec![1, 3]; // This Poll belongs to Criteria id 1
-        let poll_option_id = 1;
+        let criteria_option_id_array = vec![CriteriaOptionId {
+            criteria_id: 1,
+            poll_option_id: 1,
+        }];
         let img_url = None;
         let title = "Test poll".to_string();
         let description = "Test poll description".to_string();
@@ -175,8 +177,7 @@ mod tests {
 
         // --- Create the first criteria ---
         contract.create_poll(
-            criteria_ids,
-            poll_option_id,
+            criteria_option_id_array,
             user_id,
             img_url,
             title,
@@ -188,14 +189,15 @@ mod tests {
         let first_poll_id = 1; // Id of the newly created Poll
         let first_poll = contract.get_poll_by_id(first_poll_id);
         assert_eq!(first_poll.created_by, 1);
-        assert_eq!(first_poll.criteria_ids, [1, 3]);
         assert_eq!(first_poll.title, "Test poll".to_string());
         assert_eq!(first_poll.description, "Test poll description".to_string());
 
         // --- Create the second Poll ---
         contract.create_poll(
-            vec![1],
-            1,
+            vec![CriteriaOptionId {
+                criteria_id: 2,
+                poll_option_id: 2,
+            }],
             1,
             None,
             "Test poll 2".to_string(),
@@ -210,7 +212,6 @@ mod tests {
         // --- Update the second Poll ---
         contract.update_poll(
             2,
-            1,
             None,
             "Updated Poll title".to_string(),
             "Updated Poll description".to_string(),
@@ -243,13 +244,13 @@ mod tests {
         let voted_user_id = 1;
         let poll_id = 1;
         let criteria_user_array = vec![
-            CriteriaUser {
+            CriteriaOption {
                 criteria_id: 1,
-                user_id: 3,
+                option: "Zuong".to_string(),
             },
-            CriteriaUser {
+            CriteriaOption {
                 criteria_id: 3,
-                user_id: 1,
+                option: "Manh".to_string(),
             },
         ];
         contract.vote(voted_user_id, poll_id, criteria_user_array);

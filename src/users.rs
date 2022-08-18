@@ -73,6 +73,19 @@ impl AppVoteContract {
         // Refund NEAR
         refund_deposit(after_storage_usage - before_storage_usage);
 
+        // EVENT LOG
+        let create_user_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::CreateUser,
+            data: serde_json::to_string(&new_user).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&create_user_log).unwrap()
+        );
+
         new_user
     }
 
@@ -124,6 +137,16 @@ impl AppVoteContract {
             .get(&user_id)
             .expect("This user does not exist");
 
+        // Check duplicate wallet_address of the same blockchain_type
+        for (_user_id, user) in self.users_by_id.iter() {
+            if matches!(user.user_wallet.blockchain_type, _blockchain_type) {
+                assert!(
+                    user.user_wallet.wallet_address != wallet_address || user.id == user_id,
+                    "Duplicate wallet address for this blockchain!"
+                );
+            }
+        }
+
         let updated_user = User {
             id: user.id,
             name,
@@ -139,6 +162,19 @@ impl AppVoteContract {
 
         // Update users_by_id
         self.users_by_id.insert(&user_id, &updated_user);
+
+        // EVENT LOG
+        let update_user_log: EventLog = EventLog {
+            standard: "nep297".to_string(),
+            version: "1.0.0".to_string(),
+            event: EventLogVariant::UpdateUser,
+            data: serde_json::to_string(&updated_user).unwrap(),
+        };
+
+        log!(
+            "EVENT_JSON:{}",
+            serde_json::to_string(&update_user_log).unwrap()
+        );
 
         updated_user
     }
@@ -167,18 +203,6 @@ impl AppVoteContract {
                 poll_option.created_by != user_id,
                 "Cannot delete this User! This User is linked to a Poll Option record!"
             );
-        }
-
-        // Delete Result belongs to this User
-        let mut remove_result_set = vec![]; // Vector of result_ids that need to be deleted
-        for (result_id, result) in self.results_by_id.iter() {
-            if result.user_id == user_id {
-                remove_result_set.push(result_id);
-            }
-        }
-        log!("Remove result set: {:?}", remove_result_set);
-        for result_id in remove_result_set {
-            self.results_by_id.remove(&result_id).unwrap();
         }
 
         // Delete this User from IsUserVote

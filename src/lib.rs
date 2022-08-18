@@ -1,7 +1,7 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen, AccountId, Balance, PanicOnDefault, Promise, Timestamp, log};
+use near_sdk::{env, near_bindgen, AccountId, Balance, PanicOnDefault, Promise, Timestamp, log, serde_json};
 
 pub type UserId = u32;
 pub type CriteriaId = u32;
@@ -18,6 +18,7 @@ pub use crate::polls::*;
 pub use crate::results::*;
 pub use crate::tests::*;
 pub use crate::users::*;
+pub use crate::event::*;
 use crate::utils::*;
 
 mod criterias;
@@ -28,6 +29,7 @@ mod polls;
 mod results;
 mod tests;
 mod users;
+mod event;
 mod utils;
 
 const PAGINATION_SIZE: u64 = 10;
