@@ -27,7 +27,6 @@ near call btc-app-vote.duongnh.testnet create_user '{"name": "Zuong", "role": "A
 ```
 
 2. View total number of User in the Smart Contract
-
 ```
 near view btc-app-vote.duongnh.testnet user_total_supply
 ```
@@ -73,7 +72,6 @@ near call btc-app-vote.duongnh.testnet create_criteria '{"created_by": 1, "descr
 ```
 
 2. View total number of Criteria in the Smart Contract
-
 ```
 near view btc-app-vote.duongnh.testnet criteria_total_supply
 ```
@@ -83,7 +81,6 @@ near view btc-app-vote.duongnh.testnet criteria_total_supply
 ```
 near view btc-app-vote.duongnh.testnet get_all_criterias '{"from_index": 0, "limit": 10}'
 ```
-
 4. View 1 Criteria by criteria_id
 
 ```
@@ -113,7 +110,6 @@ near call btc-app-vote.duongnh.testnet create_poll_option '{"created_by": 1, "ti
 ```
 
 2. View total number of Poll Option in the Smart Contract
-
 ```
 near view btc-app-vote.duongnh.testnet poll_option_total_supply
 ```
@@ -153,7 +149,6 @@ near call btc-app-vote.duongnh.testnet create_poll '{"criteria_option_id_array":
 ```
 
 2. View total number of Poll in the Smart Contract
-
 ```
 near view btc-app-vote.duongnh.testnet poll_total_supply
 ```
@@ -173,7 +168,7 @@ near view btc-app-vote.duongnh.testnet get_poll_by_id '{"poll_id": 1}'
 5. Update Poll information
 
 ```
-near call btc-app-vote.duongnh.testnet update_poll '{"poll_id": 1, "img_url": None, "title": "Updated title", "description": "Updated description", "start_at": 0, "end_at": 0}' --accountId duongnh.testnet
+near call btc-app-vote.duongnh.testnet update_poll '{"poll_id": 1, "img_url": "", "title": "Updated title", "description": "Updated description", "start_at": 0, "end_at": 0}' --accountId duongnh.testnet
 ```
 
 6. Delete a Poll
@@ -183,9 +178,7 @@ near call btc-app-vote.duongnh.testnet delete_poll '{"poll_id": 1}' --accountId 
 ```
 
 ---
-
 ### Results
-
 1. View list of Results (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
 
 ```
@@ -193,7 +186,6 @@ near view btc-app-vote.duongnh.testnet get_all_results '{"from_index": 0, "limit
 ```
 
 2. View total number of Result in the Smart Contract
-
 ```
 near view btc-app-vote.duongnh.testnet result_total_supply
 ```
@@ -202,12 +194,18 @@ near view btc-app-vote.duongnh.testnet result_total_supply
 
 ```
 near view btc-app-vote.duongnh.testnet get_all_results_by_poll_criteria_id '{"poll_id": 1, "criteria_id": 1}'
+
 ```
 
 4. Update Result information
 
 ```
 near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_option_array": [{"criteria_id": 1,"option": "Duong"}, {"criteria_id": 2,"option": "Manh"}]}' --accountId duongnh.testnet --gas 30000000000000
+```
+
+5. Get the number of Users who voted for a poll
+```
+near view btc-app-vote.duongnh.testnet num_users_vote_for_a_poll '{"poll_id": 1}'
 ```
 
 5. Delete a Result
@@ -217,17 +215,13 @@ near call btc-app-vote.duongnh.testnet delete_result '{"result_id": 1}' --accoun
 ```
 
 ---
-
 ## Is Voted
-
 1. Check if a User has voted for a Poll or not
-
 ```
 near view btc-app-vote.duongnh.testnet is_voted '{"user_id": 1, "poll_id": 1}'
 ```
 
 2. View list of IsUserVote (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
-
 ```
 near view btc-app-vote.duongnh.testnet get_all_is_user_votes '{"from_index": 0, "limit": 10}'
 ```
