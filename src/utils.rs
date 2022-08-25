@@ -1,14 +1,11 @@
 use crate::*;
 
-pub(crate) fn refund_deposit(storage_used: u64) {
+pub(crate) fn refund_deposit(storage_used: u64) -> u128 {
     // Tính lượng tiền cần nạp để cover storage
     let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
     let attached_deposit = env::attached_deposit();
 
     log!("Storage fee: {}", required_cost);
-
-    // let data = "Some data!";
-    // fs::write("/tmp/foo", data).expect("Unable to write file");
 
     // Nếu người dùng deposit lượng tiền ít hơn lượng cần thiết để lưu data -> Báo lỗi
     assert!(
@@ -23,6 +20,8 @@ pub(crate) fn refund_deposit(storage_used: u64) {
     if refund_amount > 1 {
         Promise::new(env::predecessor_account_id()).transfer(refund_amount);
     }
+
+    required_cost
 }
 
 // pub(crate) fn assert_one_yocto() {
