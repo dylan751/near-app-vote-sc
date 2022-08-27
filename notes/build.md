@@ -208,7 +208,7 @@ near view btc-app-vote.duongnh.testnet get_all_results_by_poll_criteria_id '{"po
 4. Update Result information
 
 ```
-near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_option_array": [{"criteria_id": 1,"option": "Duong"}, {"criteria_id": 2,"option": "Manh"}]}' --accountId duongnh.testnet --gas 30000000000000
+near call btc-app-vote.duongnh.testnet vote '{"voted_user_id": 1, "poll_id": 1, "criteria_option_array": [{"criteria_id": 1,"option": "Hamburger"}, {"criteria_id": 2,"option": "Pepsi"}]}' --accountId duongnh.testnet --gas 300000000000000
 ```
 
 5. Get the number of Users who voted for a poll
