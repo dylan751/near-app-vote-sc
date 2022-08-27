@@ -5,6 +5,7 @@ pub(crate) fn refund_deposit(storage_used: u64) -> u128 {
     let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
     let attached_deposit = env::attached_deposit();
 
+    log!("Storage data: {}", storage_used);
     log!("Storage fee: {}", required_cost);
 
     // Nếu người dùng deposit lượng tiền ít hơn lượng cần thiết để lưu data -> Báo lỗi
