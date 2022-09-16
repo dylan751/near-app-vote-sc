@@ -104,7 +104,7 @@ pub struct IsUserVote {
     pub is_voted: bool,  // Check if this User has voted for this Poll or not
 }
 
-// An Option id due to a Crite
+// An Option id due to a Criteria
 #[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct CriteriaOption {
