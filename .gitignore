@@ -1,5 +1,4 @@
 /target
 /Cargo.lock
-/build-test.md
-/build-test-stable.md
-/create-data.sh
+/notes
+/scripts
