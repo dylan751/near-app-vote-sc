@@ -175,7 +175,7 @@ mod tests {
         let start_at = Some(0);
         let end_at = Some(0);
 
-        // --- Create the first criteria ---
+        // --- Create the first poll ---
         contract.create_poll(
             criteria_option_id_array,
             user_id,
