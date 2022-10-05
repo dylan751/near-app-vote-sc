@@ -81,22 +81,30 @@ app-vote-smart-contract </br>
 
 ## Interacting with the App Vote contracts locally
 
-### Install dependencies
+### Deploy to testnet for usable API
+
+1. Install dependencies
 
 ```shell
-cargo build
+cargo install
 ```
 
-### Compile code to .wasm file
+2. Compile code to .wasm file
 
 ```shell
 ./build
 ```
 
-### Deploy to NEAR testnet
+3. Deploy to NEAR testnet
 
 ```shell
 near dev-deploy ./out/app-vote-contract.wasm
+```
+
+4. Use contract id in neardev\dev-account to call in near cli
+
+```
+near call dev-1660616028365-78983722768651 <command>
 ```
 
 ## Network
