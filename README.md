@@ -101,11 +101,13 @@ cargo install
 near dev-deploy ./out/app-vote-contract.wasm
 ```
 
-4. Use contract id in neardev\dev-account to call in near cli
+4. Use smart contract id in **neardev/dev-account** to call in near-cli
 
 ```
-near call dev-1660616028365-78983722768651 <command>
+near call dev-1660616028365-78983722768651 <command> <arguments>
 ```
+
+> For more information, see: `/notes/build-test.md`
 
 ## Network
 
