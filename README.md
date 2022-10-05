@@ -2,14 +2,10 @@
 
 ## Useful Links
 
----
-
 1. [App Vote Domain](https://app-vote-git-developphase2-app-vote-front-end.vercel.app/)
 2. [App Vote Repository](https://github.com/btc-studio/app-vote-smart-contract)
 
 ## What is App Vote?
-
----
 
 A NEAR smart contract for the Near Protocol based voting app.
 
@@ -24,8 +20,6 @@ A NEAR smart contract for the Near Protocol based voting app.
 - [Rust Programming Language](https://www.rust-lang.org/)
 
 ## Prerequisites
-
----
 
 ### Rust toolchain
 
@@ -44,8 +38,6 @@ A NEAR smart contract for the Near Protocol based voting app.
 
 ## App Vote Repository
 
----
-
 ### Overview
 
 app-vote-smart-contract </br>
@@ -53,7 +45,7 @@ app-vote-smart-contract </br>
 ├── README.md </br>
 ├── build.sh </br>
 ├── neardev </br>
-├   ├── dev-account </br>
+├ ├── dev-account </br>
 ├   └── dev-account.env </br>
 ├── notes </br>
 ├   ├── DAO.md </br>
@@ -67,17 +59,17 @@ app-vote-smart-contract </br>
 ├   ├── log-deposit.sh </br>
 ├   └── log-deposit.txt </br>
 ├── src </br>
-├   ├── criterias.rs </br>
-├   ├── custom_struct.rs </br>
-├   ├── event.rs </br>
-├   ├── is_user_votes.rs </br>
-├   ├── lib.rs </br>
-├   ├── poll_options.rs </br>
-├   ├── polls.rs </br>
-├   ├── results.rs </br>
-├   ├── tests.rs </br>
-├   ├── users.rs </br>
-└   └── utils.rs </br>
+├ ├── criterias.rs </br>
+├ ├── custom_struct.rs </br>
+├ ├── event.rs </br>
+├ ├── is_user_votes.rs </br>
+├ ├── lib.rs </br>
+├ ├── poll_options.rs </br>
+├ ├── polls.rs </br>
+├ ├── results.rs </br>
+├ ├── tests.rs </br>
+├ ├── users.rs </br>
+└ └── utils.rs </br>
 
 ### Directory Details
 
@@ -88,8 +80,6 @@ app-vote-smart-contract </br>
 - **src** - Contains all the Smart Contract logic for App Vote
 
 ## Interacting with the App Vote contracts locally
-
----
 
 ### Install dependencies
 
@@ -111,13 +101,9 @@ near dev-deploy ./out/app-vote-contract.wasm
 
 ## Network
 
----
-
 development
 
 ## Contracts
-
----
 
 |   CONTRACT   |        ADDRESS        |
 | :----------: | :-------------------: |
