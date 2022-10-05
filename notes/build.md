@@ -26,6 +26,7 @@ near call app-vote.btcs.testnet create_user '{"name": "Zuong", "role": "Admin", 
 ```
 
 2. View total number of User in the Smart Contract
+
 ```
 near view app-vote.btcs.testnet user_total_supply
 ```
@@ -71,6 +72,7 @@ near call app-vote.btcs.testnet create_criteria '{"created_by": 1, "descriptions
 ```
 
 2. View total number of Criteria in the Smart Contract
+
 ```
 near view app-vote.btcs.testnet criteria_total_supply
 ```
@@ -80,6 +82,7 @@ near view app-vote.btcs.testnet criteria_total_supply
 ```
 near view app-vote.btcs.testnet get_all_criterias '{"from_index": 0, "limit": 10}'
 ```
+
 4. View 1 Criteria by criteria_id
 
 ```
@@ -109,6 +112,7 @@ near call app-vote.btcs.testnet create_poll_option '{"created_by": 1, "title": "
 ```
 
 2. View total number of Poll Option in the Smart Contract
+
 ```
 near view app-vote.btcs.testnet poll_option_total_supply
 ```
@@ -148,6 +152,7 @@ near call app-vote.btcs.testnet create_poll '{"criteria_option_id_array": [{"cri
 ```
 
 2. View total number of Poll in the Smart Contract
+
 ```
 near view app-vote.btcs.testnet poll_total_supply
 ```
@@ -177,7 +182,9 @@ near call app-vote.btcs.testnet delete_poll '{"poll_id": 1}' --accountId duongnh
 ```
 
 ---
+
 ### Results
+
 1. View list of Results (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
 
 ```
@@ -185,6 +192,7 @@ near view app-vote.btcs.testnet get_all_results '{"from_index": 0, "limit": 10}'
 ```
 
 2. View total number of Result in the Smart Contract
+
 ```
 near view app-vote.btcs.testnet result_total_supply
 ```
@@ -214,13 +222,18 @@ near call app-vote.btcs.testnet delete_result '{"result_id": 1}' --accountId duo
 ```
 
 ---
+
 ## Is Voted
+
 1. Check if a User has voted for a Poll or not
+
 ```
 near view app-vote.btcs.testnet is_voted '{"user_id": 1, "poll_id": 1}'
 ```
 
 2. View list of IsUserVote (with pagination) of the Contract: (`from_index`: integer, `limit`: integer)
+
 ```
 near view app-vote.btcs.testnet get_all_is_user_votes '{"from_index": 0, "limit": 10}'
 ```
+
